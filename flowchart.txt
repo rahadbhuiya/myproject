@@ -1,0 +1,47 @@
+                             +--------------------------+
+                             |     User Registration    |
+                             |--------------------------|
+                             | - Login / Register       |
+                             | - Email Verification     |
+                             +--------------------------+
+                                         |
+                                         v
+                             +--------------------------+
+                             |    Role Based Access     |
+                             |--------------------------|
+                             | - Admin                  |
+                             | - User                   |
+                             +--------------------------+
+                                         |
+            +----------------------------+----------------------------+
+            |                                                         |
+            v                                                         v
++--------------------------+                           +---------------------------+
+|       Admin Panel        |                           |       User Panel         |
+|--------------------------|                           |---------------------------|
+| - Manage Categories      |                           | - Browse Games            |
+| - Manage Games           |                           | - View Top-Up Products    |
+| - Manage Products        |                           | - Submit Order            |
+| - Manage Orders          |                           | - Track Order Status      |
+| - Set Dollar Rate        |                           | - View Exchange Rate      |
+| - Site Settings          |                           | - Get Notifications       |
+|                          |                           | - **Purchase History** ✅ |
++--------------------------+                           +---------------------------+
+            |                                                         |
+            v                                                         v
++--------------------------+                           +---------------------------+
+|      Transaction Flow     <------------------------- |   Manual Payment (User)   |
+|--------------------------|                           |---------------------------|
+| - Order Submission       |                           | - Select Product          |
+| - View Transaction Info  |                           | - Enter Game ID           |
+| - Approve / Cancel Order |                           | - Upload Screenshot       |
+| - Mark as Completed      |                           | - Submit Form             |
++--------------------------+                           +---------------------------+
+            |
+            v
++--------------------------+
+|   Notification System    |
+|--------------------------|
+| - Send Email or In-App   |
+|   on Status Change       |
++--------------------------+
