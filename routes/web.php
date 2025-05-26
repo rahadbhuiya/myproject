@@ -66,7 +66,7 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 
 Route::get('/admin/exchange-rates', [App\Http\Controllers\Admin\ExchangeRateController::class, 'index'])->name('admin.exchange-rates.index');
 Route::resource('features', App\Http\Controllers\Admin\FeatureController::class);
-// যদি অ্যাডমিন এপ্লিকেশন হয়, যেমন:
+
 Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 Route::resource('exchange-rates', \App\Http\Controllers\ExchangeRateController::class);
 Route::get('/games/create', [GameController::class, 'create'])->name('games.create');
@@ -97,5 +97,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('topups', TopUpProductController::class);
 });
 
-// Already defined here:
+
 Route::resource('products', TopUpProductController::class);

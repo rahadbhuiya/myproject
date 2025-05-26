@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\TopUpProduct;
 use App\Http\Controllers\Controller;
 use App\Models\ExchangeRate;
 use Illuminate\Http\Request;
@@ -10,8 +11,14 @@ class ExchangeRateController extends Controller
 {
     public function index()
     {
+        // Get the first exchange rate record (or null if none exists)
         $exchangeRate = ExchangeRate::first();
-        return view('admin.exchange_rate.index', compact('exchangeRate'));
+
+        // Get all TopUpProducts with their related game
+        $topUpProducts = TopUpProduct::with('game')->get();
+
+        // Pass single $exchangeRate and $topUpProducts to the view
+        return view('admin.exchange_rate.index', compact('exchangeRate', 'topUpProducts'));
     }
 
     public function update(Request $request)
