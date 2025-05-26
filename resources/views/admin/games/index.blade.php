@@ -5,7 +5,7 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Games</h5>
-    <a href="{{ route('games.create') }}" class="btn btn-primary btn-sm">Add New Game</a>
+    <a href="{{ route('admin.games.create') }}" class="btn btn-primary btn-sm">Add New Game</a>
   </div>
 
   <div class="card-body">
@@ -34,8 +34,8 @@
             </td>
             <td>{{ Str::limit($game->description, 80) }}</td>
             <td>
-              <a href="{{ route('games.edit', $game->id) }}" class="btn btn-sm btn-info">Edit</a>
-              <form action="{{ route('games.destroy', $game->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this game?')">
+              <a href="{{ route('admin.games.edit', $game->id) }}" class="btn btn-sm btn-info">Edit</a>
+              <form action="{{ route('admin.games.destroy', $game->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this game?')">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-sm btn-danger">Delete</button>

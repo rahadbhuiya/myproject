@@ -32,8 +32,8 @@
               @endif
             </td>
             <td>
-              <a href="{{ route('categories.edit', $category->id) }}" class="btn btn-sm btn-info">Edit</a>
-              <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this category?')">
+              <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-sm btn-info">Edit</a>
+              <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this category?')">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-sm btn-danger">Delete</button>

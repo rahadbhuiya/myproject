@@ -8,14 +8,12 @@ use Illuminate\Http\Request;
 
 class ExchangeRateController extends Controller
 {
-        // Show current exchange rate
     public function index()
     {
         $exchangeRate = ExchangeRate::first();
         return view('admin.exchange_rate.index', compact('exchangeRate'));
     }
 
-    // Update the exchange rate
     public function update(Request $request)
     {
         $request->validate([
@@ -23,6 +21,7 @@ class ExchangeRateController extends Controller
         ]);
 
         $exchangeRate = ExchangeRate::first();
+
         if ($exchangeRate) {
             $exchangeRate->rate = $request->rate;
             $exchangeRate->save();
@@ -32,5 +31,4 @@ class ExchangeRateController extends Controller
 
         return redirect()->route('admin.exchange_rate.index')->with('success', 'Exchange rate updated');
     }
-
 }

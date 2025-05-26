@@ -13,13 +13,13 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return view("admin.categorie.index", compact('categories'));
+        return view("admin.categories.index", compact('categories'));
     }
 
     // Show create category form
     public function create()
     {
-        return view('admin.categorie.create');
+        return view('admin.categories.create');
     }
 
     // Store new category
@@ -36,53 +36,58 @@ class CategoryController extends Controller
         $category->description = $request->description;
 
         if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $uploadedFile = Cloudinary::uploadApi()->upload($image->getRealPath());
-                $category->image = $uploadedFile['secure_url']; 
-            }
+            $uploadedFile = Cloudinary::uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'categories']
+            );
+            $category->image = $uploadedFile['secure_url'];
+            $category->image_public_id = $uploadedFile['public_id'];
+        }
 
         $category->save();
 
-        return redirect()->route('categories.index')->with('success', 'Category added successfully');
+        return redirect()->route('admin.categories.index')->with('success', 'Category added successfully');
     }
 
     // Show edit category form
     public function edit($id)
     {
         $category = Category::findOrFail($id);
-        return view('categories.edit', compact('category'));
+        return view('admin.categories.edit', compact('category'));
     }
 
     // Update category
     public function update(Request $request, $id)
     {
+        $category = Category::findOrFail($id);
+
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $category = Category::findOrFail($id);
         $category->name = $request->name;
         $category->description = $request->description;
 
-        // Image upload
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
-            $category->image = $imagePath;
+            // Delete old image from Cloudinary if public ID exists
+            if (!empty($category->image_public_id)) {
+                Cloudinary::uploadApi()->destroy($category->image_public_id);
+            }
+
+            // Upload new image
+            $uploadedImage = Cloudinary::uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'categories']
+            );
+
+            $category->image = $uploadedImage['secure_url'];
+            $category->image_public_id = $uploadedImage['public_id'];
         }
 
         $category->save();
 
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully');
-    }
-
-    // Delete category
-    public function destroy($id)
-    {
-        $category = Category::findOrFail($id);
-        $category->delete();
-
-        return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
+        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
 }

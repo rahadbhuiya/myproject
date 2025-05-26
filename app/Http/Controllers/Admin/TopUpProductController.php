@@ -20,9 +20,11 @@ class TopUpProductController extends Controller
     // Show create form for new top-up product
     public function create()
     {
-        $games = Game::all();
+        $games = Game::all(); // needed for the dropdown on the form
         return view('admin.topups.create', compact('games'));
     }
+
+
 
     // Store new top-up product
     public function store(Request $request)

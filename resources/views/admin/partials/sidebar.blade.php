@@ -30,7 +30,7 @@
       </a>
     </li>
     <li>
-      <a href="{{ route('categories.index') }}">
+      <a href="{{ route('admin.categories.index') }}">
         <i class="zmdi zmdi-view-dashboard"></i> <span>Catagory</span>
       </a>
     </li>
@@ -46,7 +46,7 @@
       </a>
     </li>
       <li>
-        <a href="{{ route('orders.index') }}">
+        <a href="{{ route('admin.orders.index') }}">
           <i class="zmdi zmdi-view-dashboard"></i> <span>Order</span>
         </a>
       </li>
@@ -54,7 +54,7 @@
       
       
       <li>
-        <a href="{{ route('exchange-rates.index') }}">
+        <a href="{{ route('admin.exchange_rate.index') }}">
           <i class="zmdi zmdi-view-dashboard"></i> <span>exchange-rates</span>
         </a>
       </li>

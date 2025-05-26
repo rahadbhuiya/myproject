@@ -5,7 +5,7 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Top-Up Products</h5>
-    <a href="{{ route('products.create') }}" class="btn btn-sm btn-primary">Add New Product</a>
+    <a href="{{ route('admin.topups.create') }}" class="btn btn-sm btn-primary">Add New Product</a>
   </div>
 
   <div class="card-body">
@@ -30,8 +30,8 @@
             <td>{{ $topUpProduct->price }} BDT</td>
             <td>{{ $topUpProduct->delivery_time }}</td>
             <td>
-              <a href="{{ route('products.edit', $topUpProduct->id) }}" class="btn btn-sm btn-info">Edit</a>
-              <form action="{{ route('products.destroy', $topUpProduct->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this product?')">
+              <a href="{{ route('admin.topups.edit', $topUpProduct->id) }}" class="btn btn-sm btn-info">Edit</a>
+              <form action="{{ route('admin.topups.destroy', $topUpProduct->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this product?')">
                 @csrf
                 @method('DELETE')
                 <button class="btn btn-sm btn-danger">Delete</button>
