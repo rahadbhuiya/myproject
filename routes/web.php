@@ -88,6 +88,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/exchange-rates/update', [ExchangeRateController::class, 'update'])->name('exchange_rate.update');
 });
 
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
 
 

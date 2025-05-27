@@ -56,7 +56,7 @@ class TopUpProductController extends Controller
     {
         $topUpProduct = TopUpProduct::findOrFail($id);
         $games = Game::all();
-        return view('products.edit', compact('topUpProduct', 'games'));
+        return view('admin.topups.edit', compact('topUpProduct', 'games'));
     }
 
     // Update top-up product
@@ -81,7 +81,7 @@ class TopUpProductController extends Controller
 
         $topUpProduct->save();
 
-        return redirect()->route('admin.top_up_products.index')->with('success', 'Top-up Product updated successfully');
+        return redirect()->route('admin.topups.index')->with('success', 'Top-up Product updated successfully');
     }
 
     // Delete top-up product
@@ -90,6 +90,6 @@ class TopUpProductController extends Controller
         $topUpProduct = TopUpProduct::findOrFail($id);
         $topUpProduct->delete();
 
-        return redirect()->route('admin.top_up_products.index')->with('success', 'Top-up Product deleted successfully');
+        return redirect()->route('admin.topups.index')->with('success', 'Top-up Product deleted successfully');
     }
 }
