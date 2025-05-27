@@ -153,17 +153,17 @@
                         $('#submitSection button').prop('disabled', true).text('Placing...');
                     },
                     success: function (response) {
-                        Swal.fire('অর্ডার সফল!', 'আপনার অর্ডার রেকর্ড করা হয়েছে!', 'success');
+                        Swal.fire('Order successfull!', 'Your order has been recorded!', 'success');
                         form.reset();
                         instructionBox.innerHTML = instructions['bkash'];
                     },
                     error: function (xhr) {
-                        let errorMessage = 'একটি ত্রুটি ঘটেছে। দয়া করে আবার চেষ্টা করুন।';
+                        let errorMessage = 'There is a problem, Please try again.';
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
                             errorMessage = Object.values(errors).map(err => err[0]).join('\n');
                         }
-                        Swal.fire('ত্রুটি!', errorMessage, 'error');
+                        Swal.fire('Error!', errorMessage, 'error');
                     },
                     complete: function () {
                         $('#submitSection button').prop('disabled', false).text('PLACE ORDER');
