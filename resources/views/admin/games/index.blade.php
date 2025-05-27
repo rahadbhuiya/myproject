@@ -1,5 +1,5 @@
 @extends('admin.layouts.admin')
-@section('title', 'Banner')
+@section('title', 'Games')
 @section('content')
 
 <div class="card">
@@ -17,6 +17,7 @@
             <th scope="col">Category</th>
             <th scope="col">Logo</th>
             <th scope="col">Description</th>
+            <th scope="col">Products</th> {{-- New column --}}
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -33,6 +34,17 @@
               @endif
             </td>
             <td>{{ Str::limit($game->description, 80) }}</td>
+            <td>
+              @if ($game->products && $game->products->count())
+                <ul class="mb-0 ps-3">
+                  @foreach ($game->products as $product)
+                    <li>{{ $product->name }}</li>
+                  @endforeach
+                </ul>
+              @else
+                <span class="text-muted">No products</span>
+              @endif
+            </td>
             <td>
               <a href="{{ route('admin.games.edit', $game->id) }}" class="btn btn-sm btn-info">Edit</a>
               <form action="{{ route('admin.games.destroy', $game->id) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Delete this game?')">

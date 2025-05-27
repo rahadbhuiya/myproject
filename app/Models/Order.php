@@ -9,23 +9,24 @@ class Order extends Model
 {
     use HasFactory;
 
-    // Mass assignable attributes
+    // Mass assignable attributes (fillable)
     protected $fillable = [
-        'user_id',
-        'email',
-        'game_uid',
-        'sender_number',
-        'transaction_id',
-        'product_id',
-        'top_up_product_id', // assuming this exists in your DB
-        'game_id',
-        'payment_method',
-        'price',
-        'status',
+        'user_id',             // User who placed the order (nullable if guest)
+        'email',               // Email of the buyer
+        'game_uid',            // User's game ID or account identifier
+        'sender_number',       // Phone or sender number for payment
+        'transaction_id',      // Unique transaction/payment ID
+        'product_id',          // Related TopUpProduct ID
+        'top_up_product_id',   // Optional: related TopUpProduct ID if different
+        'game_id',             // Related Game ID
+        'payment_method',      // Payment method used
+        'price',               // Price paid
+        'status',              // Order status e.g. pending, completed
     ];
 
     /**
-     * An order belongs to a user.
+     * Relationship: Order belongs to a User (optional).
+     * Useful if you have registered users.
      */
     public function user()
     {
@@ -33,7 +34,7 @@ class Order extends Model
     }
 
     /**
-     * An order belongs to a game.
+     * Relationship: Order belongs to a Game.
      */
     public function game()
     {
@@ -41,7 +42,7 @@ class Order extends Model
     }
 
     /**
-     * An order belongs to a product (top up product).
+     * Relationship: Order belongs to a TopUpProduct through product_id.
      */
     public function product()
     {
@@ -49,7 +50,8 @@ class Order extends Model
     }
 
     /**
-     * If you want to explicitly relate to top_up_product_id as well.
+     * Relationship: Optional link to a TopUpProduct through top_up_product_id.
+     * This can be used if you have a separate column for some reason.
      */
     public function topUpProduct()
     {

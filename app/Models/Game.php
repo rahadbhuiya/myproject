@@ -22,8 +22,15 @@ use HasFactory;
     {
         return $this->belongsTo(Category::class);
     }
+    // public function products()
+    // {
+    //     return $this->hasMany(Product::class); // or TopUpProduct::class
+    // }
+
     public function products()
     {
-        return $this->hasOne(TopUpProduct::class);
+        return $this->hasMany(TopUpProduct::class);
+        return $this->hasMany(Product::class);
     }
+
 }

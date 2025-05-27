@@ -18,7 +18,7 @@ class ExchangeRateController extends Controller
         $topUpProducts = TopUpProduct::with('game')->get();
 
         // Pass single $exchangeRate and $topUpProducts to the view
-        return view('admin.exchange_rate.index', compact('exchangeRate', 'topUpProducts'));
+        return view('admin.exchange_rate.create', compact('exchangeRate', 'topUpProducts'));
     }
 
     public function update(Request $request)
