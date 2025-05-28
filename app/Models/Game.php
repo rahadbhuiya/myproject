@@ -32,5 +32,6 @@ use HasFactory;
         return $this->hasMany(TopUpProduct::class);
         return $this->hasMany(Product::class);
     }
+    
 
 }

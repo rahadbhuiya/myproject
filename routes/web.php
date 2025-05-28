@@ -163,3 +163,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
 });
 
+Route::get('admin/exchange-rates/create', [ExchangeRateController::class, 'create'])->name('admin.exchange_rate.create');
+Route::post('admin/exchange-rates', [ExchangeRateController::class, 'store'])->name('admin.exchange_rate.store');
+Route::get('admin/exchange-rates', [ExchangeRateController::class, 'index'])->name('admin.exchange_rate.index');
+
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/exchange-rates', [ExchangeRateController::class, 'index'])->name('exchange_rate.index');
+    Route::get('/exchange-rate/create', [ExchangeRateController::class, 'create'])->name('exchange_rate.create');
+    Route::post('/exchange-rate/store', [ExchangeRateController::class, 'store'])->name('exchange_rate.store');
+});
+
+Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('frontend.exchange.rate');
+
+Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('frontend.exchange.rate');
+Route::post('/admin/orders/{id}/complete', [OrderController::class, 'markAsComplete'])->name('admin.orders.complete');
+Route::post('/admin/orders/{id}/complete', [\App\Http\Controllers\Admin\OrderController::class, 'markAsComplete'])->name('admin.orders.complete');
+Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('exchange.rate');

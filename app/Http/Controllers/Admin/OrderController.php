@@ -101,6 +101,21 @@ class OrderController extends Controller
     }
 
     /**
+     * Mark the specified order as complete.
+     */
+    public function markAsComplete($id)
+    {
+        $order = Order::findOrFail($id);
+
+        if (strtolower($order->status) === 'pending') {
+            $order->status = 'complete';
+            $order->save();
+        }
+
+        return redirect()->route('admin.orders.show', $id)->with('success', 'Order marked as complete.');
+    }
+
+    /**
      * Remove the specified order from storage.
      */
     public function destroy($id)

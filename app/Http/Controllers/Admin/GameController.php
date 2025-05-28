@@ -10,21 +10,21 @@ use Illuminate\Http\Request;
 
 class GameController extends Controller
 {
-    // Show games list
+    // Show list of games
     public function index()
     {
         $games = Game::with('category')->get();
         return view('admin.games.index', compact('games'));
     }
 
-    // Show create game form
+    // Show form to create a new game
     public function create()
     {
         $categories = Category::all();
         return view('admin.games.create', compact('categories'));
     }
 
-    // Store new game
+    // Store new game in database
     public function store(Request $request)
     {
         $request->validate([
@@ -41,25 +41,27 @@ class GameController extends Controller
 
         if ($request->hasFile('logo')) {
             $image = $request->file('logo');
-            $uploadedFile = Cloudinary::uploadApi()->upload($image->getRealPath());
-            $game->logo = $uploadedFile['secure_url']; 
-            $game->logo_public_id = $uploadedFile['public_id'] ?? null; // save public id if you want to delete later
+            $uploadedFile = Cloudinary::uploadApi()->upload($image->getRealPath(), [
+                'folder' => 'games'
+            ]);
+            $game->logo = $uploadedFile['secure_url'];
+            $game->logo_public_id = $uploadedFile['public_id'];
         }
 
         $game->save();
 
-        return redirect()->route('games.index')->with('success', 'Game added successfully');
+        return redirect()->route('admin.games.index')->with('success', 'Game added successfully');
     }
 
-    // Show edit game form
+    // Show form to edit an existing game
     public function edit($id)
     {
         $game = Game::findOrFail($id);
         $categories = Category::all();
-        return view('admin.games.edit', compact('game', 'categories')); // use admin.game.edit consistently
+        return view('admin.games.edit', compact('game', 'categories'));
     }
 
-    // Update existing game
+    // Update the game details
     public function update(Request $request, $id)
     {
         $game = Game::findOrFail($id);
@@ -81,30 +83,30 @@ class GameController extends Controller
                 Cloudinary::uploadApi()->destroy($game->logo_public_id);
             }
 
-            // Upload new logo
             $image = $request->file('logo');
-            $uploadedFile = Cloudinary::uploadApi()->upload($image->getRealPath());
+            $uploadedFile = Cloudinary::uploadApi()->upload($image->getRealPath(), [
+                'folder' => 'games'
+            ]);
             $game->logo = $uploadedFile['secure_url'];
-            $game->logo_public_id = $uploadedFile['public_id'] ?? null;
+            $game->logo_public_id = $uploadedFile['public_id'];
         }
 
         $game->save();
 
-        return redirect()->route('games.index')->with('success', 'Game updated successfully');
+        return redirect()->route('admin.games.index')->with('success', 'Game updated successfully');
     }
 
-    // Delete game
+    // Delete a game
     public function destroy($id)
     {
         $game = Game::findOrFail($id);
 
-        // Delete logo from Cloudinary if exists
         if ($game->logo_public_id) {
             Cloudinary::uploadApi()->destroy($game->logo_public_id);
         }
 
         $game->delete();
 
-        return redirect()->route('games.index')->with('success', 'Game deleted successfully');
+        return redirect()->route('admin.games.index')->with('success', 'Game deleted successfully');
     }
 }

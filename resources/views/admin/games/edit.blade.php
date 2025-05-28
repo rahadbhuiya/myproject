@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('admin.layouts.admin')
 
 @section('content')
 <h1>Edit Game</h1>
@@ -7,9 +7,11 @@
     @csrf
     @method('PUT')
 
+    <!-- Game Name -->
     <label for="name">Name:</label>
     <input type="text" name="name" id="name" value="{{ old('name', $game->name) }}" required>
 
+    <!-- Category Dropdown -->
     <label for="category">Category:</label>
     <select name="category_id" id="category" required>
         @foreach($categories as $category)
@@ -19,16 +21,20 @@
         @endforeach
     </select>
 
-    <label for="image">Game Image:</label>
-    @if($game->image)
+    <!-- Description -->
+    <label for="description">Description:</label>
+    <textarea name="description" id="description" required>{{ old('description', $game->description) }}</textarea>
+
+    <!-- Logo Upload -->
+    <label for="logo">Game Logo:</label>
+    @if($game->logo)
         <div>
-            <img src="{{ $game->image }}" alt="Current Image" style="max-width: 200px; max-height: 200px;">
+            <img src="{{ $game->logo }}?v={{ time() }}" alt="Current Logo" style="max-width: 200px; max-height: 200px;">
         </div>
     @endif
-    <input type="file" name="image" id="image" accept="image/*">
+    <input type="file" name="logo" id="logo" accept="image/*">
 
-    <!-- Add other game fields as needed -->
-
+    <br><br>
     <button type="submit">Update Game</button>
 </form>
 @endsection

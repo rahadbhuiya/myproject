@@ -2,40 +2,42 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Game;
 use App\Models\TopUpProduct;
-use App\Http\Controllers\Controller;
 use App\Models\ExchangeRate;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class ExchangeRateController extends Controller
 {
-    public function index()
+    // Show the form to create or edit the exchange rate
+    public function edit()
     {
-        // Get the first exchange rate record (or null if none exists)
-        $exchangeRate = ExchangeRate::first();
+        $games = Game::all();  // For dropdown, if needed
+        $exchangeRate = ExchangeRate::first();  // Only one rate expected
+        $topUpProducts = TopUpProduct::with('game')->get();  // Optional display
 
-        // Get all TopUpProducts with their related game
-        $topUpProducts = TopUpProduct::with('game')->get();
-
-        // Pass single $exchangeRate and $topUpProducts to the view
-        return view('admin.exchange_rate.create', compact('exchangeRate', 'topUpProducts'));
+        return view('admin.exchange_rate.edit', compact('exchangeRate', 'topUpProducts', 'games'));
     }
 
+    // Update the exchange rate (create if doesn't exist)
     public function update(Request $request)
     {
         $request->validate([
             'rate' => 'required|numeric|min:0',
         ]);
 
-        $exchangeRate = ExchangeRate::first();
+        // update or create the single exchange rate record
+        ExchangeRate::updateOrCreate([], ['rate' => $request->rate]);
 
-        if ($exchangeRate) {
-            $exchangeRate->rate = $request->rate;
-            $exchangeRate->save();
-        } else {
-            ExchangeRate::create(['rate' => $request->rate]);
-        }
+        return redirect()->route('admin.exchange_rate.edit')->with('success', 'Exchange rate updated successfully.');
+    }
 
-        return redirect()->route('admin.exchange_rate.index')->with('success', 'Exchange rate updated');
+    // List all exchange rates (usually only one)
+    public function index()
+    {
+        $exchangeRates = ExchangeRate::all();
+
+        return view('admin.exchange_rate.index', compact('exchangeRates'));
     }
 }

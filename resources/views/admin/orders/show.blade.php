@@ -19,8 +19,16 @@
     <p><strong>Transaction ID:</strong> {{ $order->transaction_id ?? 'N/A' }}</p>
     <p><strong>Created At:</strong> {{ $order->created_at ? $order->created_at->format('d M Y, h:i A') : 'N/A' }}</p>
   </div>
-  <div class="card-footer">
+
+  <div class="card-footer d-flex justify-content-between align-items-center">
     <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">Back to Orders</a>
+
+    @if(strtolower($order->status) === 'pending')
+      <form action="{{ route('admin.orders.complete', $order->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to mark this order as complete?');">
+        @csrf
+        <button type="submit" class="btn btn-success">Mark as Complete</button>
+      </form>
+    @endif
   </div>
 </div>
 
