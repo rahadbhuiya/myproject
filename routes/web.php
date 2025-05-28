@@ -180,3 +180,5 @@ Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('fro
 Route::post('/admin/orders/{id}/complete', [OrderController::class, 'markAsComplete'])->name('admin.orders.complete');
 Route::post('/admin/orders/{id}/complete', [\App\Http\Controllers\Admin\OrderController::class, 'markAsComplete'])->name('admin.orders.complete');
 Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('exchange.rate');
+
+Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('frontend.exchange.rate');
