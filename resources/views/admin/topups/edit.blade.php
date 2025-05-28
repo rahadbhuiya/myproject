@@ -34,6 +34,11 @@
       </div>
 
       <div class="mb-3">
+        <label for="discount" class="form-label">Discount (%)</label>
+        <input type="number" name="discount" class="form-control" min="0" max="100" value="{{ old('discount', $topUpProduct->discount) }}" required>
+      </div>
+
+      <div class="mb-3">
         <label for="price" class="form-label">Price (BDT)</label>
         <input type="number" name="price" class="form-control" value="{{ $topUpProduct->price }}" required>
       </div>
@@ -43,11 +48,10 @@
         <input type="text" name="delivery_time" class="form-control" value="{{ $topUpProduct->delivery_time }}" required>
       </div>
 
-    <div class="mb-3">
+      <div class="mb-3">
         <label for="instructions" class="form-label">Instructions</label>
         <textarea name="instructions" id="instructions" class="form-control" rows="3" required>{{ old('instructions', $topUpProduct->instructions) }}</textarea>
-    </div>
-
+      </div>
 
       <button type="submit" class="btn btn-primary">Update Product</button>
       <a href="{{ route('admin.topups.index') }}" class="btn btn-secondary">Cancel</a>

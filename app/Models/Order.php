@@ -22,6 +22,13 @@ class Order extends Model
         'payment_method',      // Payment method used
         'price',               // Price paid
         'status',              // Order status e.g. pending, completed
+        'discount',            // Discount applied to the order (percentage)
+    ];
+
+    // Cast the 'price' and 'discount' to a decimal type for calculations
+    protected $casts = [
+        'price' => 'decimal:2',
+        'discount' => 'decimal:2',
     ];
 
     /**
@@ -56,5 +63,61 @@ class Order extends Model
     public function topUpProduct()
     {
         return $this->belongsTo(TopUpProduct::class, 'top_up_product_id');
+    }
+
+    /**
+     * Accessor to calculate the final price after discount.
+     * If there's no discount, it returns the original price.
+     *
+     * @return float
+     */
+    public function getFinalPriceAttribute()
+    {
+        if ($this->discount) {
+            $discountAmount = ($this->price * $this->discount) / 100;
+            return $this->price - $discountAmount;
+        }
+
+        return $this->price;
+    }
+
+    /**
+     * Accessor to display the discount as a formatted string.
+     *
+     * @return string|null
+     */
+    public function getDiscountFormattedAttribute()
+    {
+        return $this->discount ? $this->discount . '%' : 'No Discount';
+    }
+
+    /**
+     * Accessor to return the price formatted with BDT currency.
+     *
+     * @return string
+     */
+    public function getPriceFormattedAttribute()
+    {
+        return number_format($this->price, 2) . ' BDT';
+    }
+
+    /**
+     * Accessor to return the final price formatted with BDT currency.
+     *
+     * @return string
+     */
+    public function getFinalPriceFormattedAttribute()
+    {
+        return number_format($this->final_price, 2) . ' BDT';
+    }
+
+    /**
+     * Accessor to return the discount as a percentage.
+     *
+     * @return string
+     */
+    public function getDiscountPercentageAttribute()
+    {
+        return $this->discount ? $this->discount . '%' : 'No Discount';
     }
 }

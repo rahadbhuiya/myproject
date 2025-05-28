@@ -182,3 +182,11 @@ Route::post('/admin/orders/{id}/complete', [\App\Http\Controllers\Admin\OrderCon
 Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('exchange.rate');
 
 Route::get('/exchange-rate', [PageController::class, 'exchangeRate'])->name('frontend.exchange.rate');
+Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');
+
+
+
+// Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');
+// Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');
+// web.php
+Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');

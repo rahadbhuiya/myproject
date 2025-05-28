@@ -11,18 +11,15 @@ use Illuminate\Database\QueryException;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of orders.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['product', 'game'])->latest()->get();
+        $orders = Order::with(['product', 'game'])
+            ->latest()
+            ->paginate(10);
+
         return view('admin.orders.index', compact('orders'));
     }
 
-    /**
-     * Show the form for creating a new order based on a product.
-     */
     public function create($id)
     {
         $product = TopUpProduct::with('game')->findOrFail($id);
@@ -30,7 +27,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created order in storage.
+     * Store a newly created order and redirect to a success page.
      */
     public function store(Request $request)
     {
@@ -43,11 +40,16 @@ class OrderController extends Controller
             'product_id'        => 'required|exists:top_up_products,id',
             'game_id'           => 'required|exists:games,id',
             'price'             => 'required|numeric',
-            'status'            => 'sometimes|string',
+            'discount'          => 'nullable|numeric|min:0|max:100',
+            'status'            => 'nullable|string',
             'top_up_product_id' => 'nullable|exists:top_up_products,id',
         ]);
 
         try {
+            $discountedPrice = isset($validated['discount']) 
+                ? $validated['price'] * (1 - $validated['discount'] / 100) 
+                : $validated['price'];
+
             $order = Order::create([
                 'email'             => $validated['email'],
                 'game_uid'          => $validated['game_uid'],
@@ -57,41 +59,41 @@ class OrderController extends Controller
                 'product_id'        => $validated['product_id'],
                 'game_id'           => $validated['game_id'],
                 'price'             => $validated['price'],
+                'discount'          => $validated['discount'] ?? 0,
+                'final_price'       => $discountedPrice,
                 'status'            => $validated['status'] ?? 'pending',
                 'top_up_product_id' => $validated['top_up_product_id'] ?? $validated['product_id'],
             ]);
 
-            return response()->json([
-                'message' => 'Order successfully placed',
-                'order'   => $order,
-            ], 201);
+            // Redirect to order success page with order id
+            return redirect()->route('order.success');
 
         } catch (QueryException $e) {
             Log::error('Order creation failed: ' . $e->getMessage());
 
-            return response()->json([
-                'message' => 'Failed to place order. Please try again.',
-                'error'   => $e->getMessage(),
-            ], 500);
+            // Optionally redirect back with error message
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['msg' => 'Failed to place order. Please try again.']);
         }
     }
 
     /**
-     * Display the specified order details.
+     * Show the order success page.
      */
+    public function success()
+    {
+        return view('frontend.order.success');
+    }
+
     public function show(Order $order)
     {
         return view('admin.orders.show', compact('order'));
     }
 
-    /**
-     * Update the specified order's status.
-     */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|string',
-        ]);
+        $request->validate(['status' => 'required|string']);
 
         $order = Order::findOrFail($id);
         $order->status = $request->status;
@@ -100,9 +102,6 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Order updated successfully!');
     }
 
-    /**
-     * Mark the specified order as complete.
-     */
     public function markAsComplete($id)
     {
         $order = Order::findOrFail($id);
@@ -115,9 +114,6 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.show', $id)->with('success', 'Order marked as complete.');
     }
 
-    /**
-     * Remove the specified order from storage.
-     */
     public function destroy($id)
     {
         $order = Order::findOrFail($id);

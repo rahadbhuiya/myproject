@@ -28,7 +28,12 @@
 
       <div class="mb-3">
         <label for="amount" class="form-label">Amount</label>
-        <input type="number" name="amount" id="amount" class="form-control" required>
+        <input type="number" step="0.01" name="amount" id="amount" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label for="discount" class="form-label">Discount (%)</label>
+        <input type="number" name="discount" id="discount" class="form-control" min="0" max="100" required>
       </div>
 
       <div class="mb-3">

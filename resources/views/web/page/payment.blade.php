@@ -52,8 +52,10 @@
                     <h2 class="mb-4 border-bottom pb-2">{{ $product->product_name }}</h2>
                     <div class="text-sm text-white">
                         <p><span class="fw-bold text-info">🎮 Game:</span> {{ $product->game->name }}</p>
-                        <p><span class="fw-bold text-success">💰 Amount:</span> {{ $product->amount }}</p>
-                        <p><span class="fw-bold text-warning">💵 Price:</span> {{ $product->price }} BDT</p>
+                        <p><span class="fw-bold text-danger">🎯 Discount:</span> {{ $product->discount ?? 0 }}%</p>
+                        <p><span class="fw-bold text-warning">💵 Final Price:</span>
+                            {{ $product->price - ($product->price * ($product->discount ?? 0) / 100) }} BDT
+                        </p>
                         <p>
                             <span class="fw-bold text-danger">📋 Instructions:</span><br>
                             <span class="whitespace-pre-line">{{ $product->instructions }}</span>
@@ -99,6 +101,7 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="game_id" value="{{ $product->game->id }}">
                     <input type="hidden" name="price" value="{{ $product->price }}">
+                    <input type="hidden" name="discount" value="{{ $product->discount ?? 0 }}">
 
                     <div id="submitSection">
                         <button type="submit" class="btn btn-success w-100">PLACE ORDER</button>
@@ -113,9 +116,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     // CSRF token setup for all AJAX requests
@@ -127,8 +127,8 @@
 
     const instructionBox = document.getElementById('paymentInstructions');
     const instructions = {
-        bkash: `<p>📌 বিকাশে টাকা পাঠানোর জন্য *247# ডায়াল করুন অথবা অ্যাপ ব্যবহার করুন।</p><p>Send Money > 01888794781 > amount > reference (1234)</p>` ,
-        nagad: `<p>📌 নগদে পাঠাতে *167# ডায়াল করুন অথবা অ্যাপ ব্যবহার করুন।</p><p>Send Money > 01888794781 > amount > reference (1234)</p>` ,
+        bkash: `<p>📌 বিকাশে টাকা পাঠানোর জন্য *247# ডায়াল করুন অথবা অ্যাপ ব্যবহার করুন।</p><p>Send Money > 01888794781 > amount > reference (1234)</p>`,
+        nagad: `<p>📌 নগদে পাঠাতে *167# ডায়াল করুন অথবা অ্যাপ ব্যবহার করুন।</p><p>Send Money > 01888794781 > amount > reference (1234)</p>`,
         rocket: `<p>📌 রকেট পাঠাতে *322# ডায়াল করুন অথবা অ্যাপ ব্যবহার করুন।</p><p>Send Money > 01742853815 > amount > reference (1234)</p>`
     };
 
@@ -153,7 +153,7 @@
                         $('#submitSection button').prop('disabled', true).text('Placing...');
                     },
                     success: function (response) {
-                        Swal.fire('Order successfull!', 'Your order has been recorded!', 'success');
+                        Swal.fire('Order successful!', 'Your order has been recorded!', 'success');
                         form.reset();
                         instructionBox.innerHTML = instructions['bkash'];
                     },

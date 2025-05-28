@@ -15,7 +15,7 @@
           <tr>
             <th>Game</th>
             <th>Product Name</th>
-            <th>Amount</th>
+            <th>Discount</th>
             <th>Price</th>
             <th>Delivery Time</th>
             <th>Actions</th>
