@@ -190,3 +190,12 @@ Route::get('/order-success', [OrderController::class, 'success'])->name('order.s
 // Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');
 // web.php
 Route::get('/order-success', [OrderController::class, 'success'])->name('order.success');
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+use App\Http\Controllers\Admin\SettingsController;
+
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+});

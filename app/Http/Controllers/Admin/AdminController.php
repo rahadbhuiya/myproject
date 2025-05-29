@@ -8,6 +8,7 @@ use App\Models\ExchangeRate;
 use App\Models\Game;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -18,7 +19,15 @@ class AdminController extends Controller
         $totalCategories = Category::count();
         $exchangeRate = ExchangeRate::first();
 
-        return view('admin.dashboard', compact('totalOrders', 'totalGames', 'totalCategories', 'exchangeRate'));
-  
+        // Get the logged-in admin's latest 10 unread notifications
+        $notifications = Auth::user()->unreadNotifications()->take(10)->get();
+
+        return view('admin.dashboard', compact(
+            'totalOrders',
+            'totalGames',
+            'totalCategories',
+            'exchangeRate',
+            'notifications'
+        ));
     }
 }
