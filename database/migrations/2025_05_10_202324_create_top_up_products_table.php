@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('game_id')->constrained()->onDelete('cascade'); 
             $table->string('product_name');
-            $table->decimal('discount', 5, 2)->default(0); // Replaced 'amount' with 'discount' for percentage
+            $table->integer('amount'); // ✅ Add this line
+            $table->decimal('discount', 5, 2)->default(0);
             $table->decimal('price', 8, 2); 
             $table->string('delivery_time'); 
             $table->text('instructions');
             $table->timestamps();
         });
-    }
+}
 
     /**
      * Reverse the migrations.

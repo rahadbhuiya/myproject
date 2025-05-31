@@ -22,7 +22,7 @@
     <!-- Pricing and Discount Information -->
     <p><strong>Original Amount:</strong> {{ $order->priceFormatted ?? 'N/A' }}</p>
     <p><strong>Discount Applied:</strong> {{ $order->discountFormatted ?? 'No Discount' }}</p>
-    <p><strong>Final Amount:</strong> {{ $order->finalPriceFormatted ?? 'N/A' }} BDT</p>
+    <p><strong>Final Amount:</strong> {{ $order->finalPriceFormatted ?? 'N/A' }}</p>
 
     <!-- Order Status and Payment Information -->
     <p><strong>Status:</strong> 

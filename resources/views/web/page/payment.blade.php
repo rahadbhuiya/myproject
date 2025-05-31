@@ -2,6 +2,8 @@
 @section('title', 'Payment Method')
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <style>
     body {
         background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
@@ -52,6 +54,7 @@
                     <h2 class="mb-4 border-bottom pb-2">{{ $product->product_name }}</h2>
                     <div class="text-sm text-white">
                         <p><span class="fw-bold text-info">🎮 Game:</span> {{ $product->game->name }}</p>
+                        <p><span class="fw-bold text-warning">💵 Price:</span> {{ $product->price }} BDT</p>
                         <p><span class="fw-bold text-danger">🎯 Discount:</span> {{ $product->discount ?? 0 }}%</p>
                         <p><span class="fw-bold text-warning">💵 Final Price:</span>
                             {{ $product->price - ($product->price * ($product->discount ?? 0) / 100) }} BDT
@@ -117,8 +120,8 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
 <script>
-    // CSRF token setup for all AJAX requests
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -153,9 +156,8 @@
                         $('#submitSection button').prop('disabled', true).text('Placing...');
                     },
                     success: function (response) {
-                        Swal.fire('Order successful!', 'Your order has been recorded!', 'success');
-                        form.reset();
-                        instructionBox.innerHTML = instructions['bkash'];
+                        // Redirect on successful order
+                        window.location.href = "{{ route('order.success') }}";
                     },
                     error: function (xhr) {
                         let errorMessage = 'There is a problem, Please try again.';
@@ -169,7 +171,7 @@
                         $('#submitSection button').prop('disabled', false).text('PLACE ORDER');
                     }
                 });
-                return false;
+                return false; // Prevent default form submission
             }
         });
     });

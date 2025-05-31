@@ -1,4 +1,4 @@
-@extends('admin.layouts.admin') {{--  admin layout  --}}
+@extends('admin.layouts.admin') {{-- admin layout --}}
 
 @section('content')
 <div class="container">
@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('settings.update') }}" method="POST">
+    <form action="{{ route('admin.settings.update') }}" method="POST">
         @csrf
 
         <div class="form-group">
@@ -16,6 +16,7 @@
             <input 
                 type="email" 
                 name="email" 
+                id="email"
                 class="form-control @error('email') is-invalid @enderror" 
                 value="{{ old('email', auth()->user()->email) }}" 
                 required>
@@ -29,6 +30,7 @@
             <input 
                 type="password" 
                 name="current_password" 
+                id="current_password"
                 class="form-control @error('current_password') is-invalid @enderror" 
                 required>
             @error('current_password')
@@ -41,6 +43,7 @@
             <input 
                 type="password" 
                 name="password" 
+                id="password"
                 class="form-control @error('password') is-invalid @enderror">
             @error('password')
                 <span class="text-danger">{{ $message }}</span>
@@ -52,6 +55,7 @@
             <input 
                 type="password" 
                 name="password_confirmation" 
+                id="password_confirmation"
                 class="form-control">
         </div>
 

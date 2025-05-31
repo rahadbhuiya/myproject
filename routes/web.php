@@ -193,9 +193,18 @@ Route::get('/order-success', [OrderController::class, 'success'])->name('order.s
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+
 use App\Http\Controllers\Admin\SettingsController;
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
 });
+
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+});
+
+
+Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\TopUpProduct;
 use App\Models\Admin;
 use App\Notifications\NewOrderNotification;
+use App\Services\Web3FormNotifier;  // <-- Add this import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
@@ -19,6 +20,7 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        // Eager load related models and paginate results
         $orders = Order::with(['product', 'game'])
             ->latest()
             ->paginate(10);
@@ -28,6 +30,8 @@ class OrderController extends Controller
 
     /**
      * Show the payment page for a given product.
+     *
+     * @param int $id Product ID
      */
     public function create($id)
     {
@@ -48,19 +52,18 @@ class OrderController extends Controller
             'payment_method'    => 'required|string',
             'product_id'        => 'required|exists:top_up_products,id',
             'game_id'           => 'required|exists:games,id',
-            'price'             => 'required|numeric',
+            'price'             => 'required|numeric|min:0',
             'discount'          => 'nullable|numeric|min:0|max:100',
             'status'            => 'nullable|string',
             'top_up_product_id' => 'nullable|exists:top_up_products,id',
         ]);
 
         try {
-            // Calculate final price after discount
-            $discountedPrice = isset($validated['discount'])
-                ? $validated['price'] * (1 - $validated['discount'] / 100)
-                : $validated['price'];
+            // Calculate final price after applying discount (if any)
+            $discount = $validated['discount'] ?? 0;
+            $discountedPrice = $validated['price'] * (1 - $discount / 100);
 
-            // Create the order
+            // Create the order in the database
             $order = Order::create([
                 'email'             => $validated['email'],
                 'game_uid'          => $validated['game_uid'],
@@ -70,20 +73,27 @@ class OrderController extends Controller
                 'product_id'        => $validated['product_id'],
                 'game_id'           => $validated['game_id'],
                 'price'             => $validated['price'],
-                'discount'          => $validated['discount'] ?? 0,
+                'discount'          => $discount,
                 'final_price'       => $discountedPrice,
                 'status'            => $validated['status'] ?? 'pending',
                 'top_up_product_id' => $validated['top_up_product_id'] ?? $validated['product_id'],
             ]);
 
-            // Send notification to all admins
+            // Load relations for the order (if needed in notification)
+            $order->load(['user', 'game', 'product']);
+
+            // Notify all admins about the new order (existing Notification system)
             $admins = Admin::all();
             Notification::send($admins, new NewOrderNotification($order));
 
-            // Redirect to order success page
+            // ALSO: Send notification via Web3FormNotifier for external webhook/email
+            Web3FormNotifier::sendOrderCreated($order);
+
+            // Redirect to the order success page
             return redirect()->route('order.success');
 
         } catch (QueryException $e) {
+            // Log error and show friendly message
             Log::error('Order creation failed: ' . $e->getMessage());
 
             return redirect()->back()
@@ -102,14 +112,22 @@ class OrderController extends Controller
 
     /**
      * Display a specific order.
+     *
+     * @param Order $order
      */
     public function show(Order $order)
     {
+        // Send order viewed notification using the service
+        // Web3FormNotifier::sendOrderViewed($order);
+
         return view('admin.orders.show', compact('order'));
     }
 
     /**
      * Update the status of a specific order.
+     *
+     * @param Request $request
+     * @param int $id Order ID
      */
     public function update(Request $request, $id)
     {
@@ -126,6 +144,8 @@ class OrderController extends Controller
 
     /**
      * Mark a pending order as complete.
+     *
+     * @param int $id Order ID
      */
     public function markAsComplete($id)
     {
@@ -134,6 +154,9 @@ class OrderController extends Controller
         if (strtolower($order->status) === 'pending') {
             $order->status = 'complete';
             $order->save();
+
+            // Send order completed notification using the service
+            Web3FormNotifier::sendOrderCompleted($order);
         }
 
         return redirect()
@@ -143,6 +166,8 @@ class OrderController extends Controller
 
     /**
      * Remove the specified order.
+     *
+     * @param int $id Order ID
      */
     public function destroy($id)
     {
