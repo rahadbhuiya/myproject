@@ -4,7 +4,7 @@
 
 <!-- Mirrored from srbthemes.kcubeinfotech.com/playhost/html/homepage-9.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 22 Apr 2025 05:38:41 GMT -->
 <head>
-    <title>Playhost - Game Hosting Website Template</title>
+    <title>KalaChan Store</title>
     <link rel="icon" href="images/icon.png" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" >

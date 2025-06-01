@@ -1,7 +1,16 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <x-authentication-card-logo />
+            <!-- <h1 style="
+                font-family: 'Orbitron', sans-serif;
+                font-size: 3.5rem;
+                font-weight: 700;
+                color: white;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            ">
+                Kalachan Login
+            </h1> -->
+
         </x-slot>
 
         <x-validation-errors class="mb-4" />

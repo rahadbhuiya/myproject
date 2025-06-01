@@ -102,6 +102,7 @@
   >
     <div class="sidebar-nav">
       <h4 class="text-white mb-4">Dashboard</h4>
+      <a href="/"><i class="fas fa-home"></i> Home</a>
       <a href="#profile" class="active"><i class="fas fa-user-circle"></i> Profile Info</a>
       <a href="#orders"><i class="fas fa-shopping-cart"></i> Orders</a>
       <a href="#billing"><i class="fas fa-credit-card"></i> Billing</a>
@@ -129,6 +130,7 @@
       ></button>
     </div>
     <div class="offcanvas-body sidebar">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
       <a href="#profile" class="active"><i class="fas fa-user-circle"></i> Profile Info</a>
       <a href="#orders"><i class="fas fa-shopping-cart"></i> Orders</a>
       <a href="#billing"><i class="fas fa-credit-card"></i> Billing</a>
