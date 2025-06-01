@@ -95,7 +95,7 @@
     </style>
 </head>
 <body>
-    <form method="POST" action="{{ route('admin.login.submit') }}">
+    <form method="POST" action="{{ route('admin.login.submit') }}" autocomplete="off">
         @csrf
         <h2>Admin Login</h2>
 
@@ -107,7 +107,7 @@
         <input id="email" type="email" name="email" required autocomplete="email" autofocus />
 
         <label for="password">Password</label>
-        <input id="password" type="password" name="password" required autocomplete="current-password" />
+        <input id="password" type="password" name="password" required autocomplete="new-password" />
 
         <button type="submit">Login</button>
     </form>

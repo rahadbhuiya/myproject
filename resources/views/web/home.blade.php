@@ -59,12 +59,12 @@
             <section class="no-top no-bottom">
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-6">
+                        <!-- <div class="col-lg-6">
                             <div class="subtitle wow fadeInUp mb-3">Features</div>
                             <h2 class="wow fadeInUp mb20" data-wow-delay=".2s">Premium Service 💱 Money Exchange</h2>
                             <p class="mb-0">Easily exchange popular currencies like USD, EUR, GBP, JPY, INR, and BDT with fast, secure, and reliable service.</p>
                             <a class="btn-main mb10 mt-4" href="{{ route('frontend.exchange.rate') }}"><span>Exchange Now</span></a>
-                        </div>
+                        </div> -->
                     </div>
 
                     
