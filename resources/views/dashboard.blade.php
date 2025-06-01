@@ -1,11 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dark User Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+  />
   <style>
     body {
       background-color: #0f0f10;
@@ -72,7 +80,7 @@
   </style>
 </head>
 <body>
-  <!-- Toggle button for sidebar -->
+  <!-- Toggle button for sidebar (mobile) -->
   <nav class="navbar navbar-dark bg-dark d-lg-none">
     <div class="container-fluid">
       <button
@@ -94,19 +102,19 @@
   >
     <div class="sidebar-nav">
       <h4 class="text-white mb-4">Dashboard</h4>
-      <a href="#profile" class="active"
-        ><i class="fas fa-user-circle"></i> Profile Info</a
-      >
+      <a href="#profile" class="active"><i class="fas fa-user-circle"></i> Profile Info</a>
       <a href="#orders"><i class="fas fa-shopping-cart"></i> Orders</a>
       <a href="#billing"><i class="fas fa-credit-card"></i> Billing</a>
       <a href="#notifications"><i class="fas fa-bell"></i> Notifications</a>
       <a href="#settings"><i class="fas fa-cog"></i> Preferences</a>
       <a href="#support"><i class="fas fa-headset"></i> Support</a>
       <a href="#security"><i class="fas fa-shield-alt"></i> Security</a>
+      <a href="#password-change"><i class="fas fa-key"></i> Change Password</a>
+      <a href="#" id="logout-link-desktop"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>
 
-  <!-- Sidebar for mobile -->
+  <!-- Sidebar for mobile (offcanvas) -->
   <div
     class="offcanvas offcanvas-start bg-dark text-white"
     tabindex="-1"
@@ -121,25 +129,45 @@
       ></button>
     </div>
     <div class="offcanvas-body sidebar">
-      <a href="#profile" class="active"
-        ><i class="fas fa-user-circle"></i> Profile Info</a
-      >
+      <a href="#profile" class="active"><i class="fas fa-user-circle"></i> Profile Info</a>
       <a href="#orders"><i class="fas fa-shopping-cart"></i> Orders</a>
       <a href="#billing"><i class="fas fa-credit-card"></i> Billing</a>
       <a href="#notifications"><i class="fas fa-bell"></i> Notifications</a>
       <a href="#settings"><i class="fas fa-cog"></i> Preferences</a>
       <a href="#support"><i class="fas fa-headset"></i> Support</a>
       <a href="#security"><i class="fas fa-shield-alt"></i> Security</a>
-      <a href="#logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <a href="#password-change"><i class="fas fa-key"></i> Change Password</a>
+      <a href="#" id="logout-link-mobile"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>
 
   <!-- Main content -->
   <div class="main-content main-wrapper">
+
+    <!-- Flash messages -->
+    @if(session('status'))
+      <div class="alert alert-success">{{ session('status') }}</div>
+    @endif
+
+    @if(session('status_password'))
+      <div class="alert alert-success">{{ session('status_password') }}</div>
+    @endif
+
+    @if($errors->any())
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
+
+    <!-- Profile Section -->
     <div id="profile" class="dashboard-section active card-dark">
       <div class="d-flex align-items-center mb-3">
         <img
-          src="https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTEyL3Jhd3BpeGVsb2ZmaWNlOF9ib3lfdmVjdG9yX2lsbHVzdHJhdGlvbl9kZXNpZ25faW5fdGhlX3N0eWxlX29mX18xNmFjZjk3YS03ZTM0LTRjNDktOTFmOC1jNzgzNGMxMzI5ZjgucG5n.png"
+          src="{{ $user->profile_photo_url ?? 'https://via.placeholder.com/80' }}"
           alt="Profile Picture"
           class="rounded-circle me-3 border border-2 shadow"
           style="width: 80px; height: 80px; object-fit: cover"
@@ -154,189 +182,290 @@
       <hr class="border-secondary" />
 
       <div class="row">
-        <!-- Left Column: Profile Details -->
         <div class="col-md-6">
-          <div class="mb-3 profile-view">
-            <p><strong>Name:</strong> Shoikat</p>
-            <p><strong>Email:</strong> shoikat@example.com</p>
-            <p><strong>Phone:</strong> +8801XXXXXXXXX</p>
-          </div>
-        </div>
+          <form method="POST" action="{{ route('profile.update') }}">
+            @csrf
 
-        <!-- Right Column: Profile Edit -->
-        <div class="col-md-6">
-          <div class="mb-3 profile-edit d-none">
-            <div class="mb-2">
-              <label class="form-label text-light">Name</label>
-              <input type="text" class="form-control form-control-sm" value="Shoikat" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label text-light">Email</label>
-              <input
-                type="email"
-                class="form-control form-control-sm"
-                value="shoikat@example.com"
-              />
-            </div>
-            <div class="mb-2">
-              <label class="form-label text-light">Phone</label>
+            <div class="mb-3">
+              <label class="form-label text-light"><strong>Name:</strong></label>
               <input
                 type="text"
+                name="name"
                 class="form-control form-control-sm"
-                value="+8801XXXXXXXXX"
+                value="{{ old('name', $user->name) }}"
+                required
               />
+              @error('name') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
-            <button class="btn btn-success btn-sm mt-2">Save Changes</button>
-            <button class="btn btn-secondary btn-sm mt-2 ms-2 cancel-edit">
-              Cancel
-            </button>
-          </div>
 
-          <div class="mb-3 change-password d-none">
-            <div class="mb-2">
-              <label class="form-label text-light">Current Password</label>
-              <input type="password" class="form-control form-control-sm" />
+            <div class="mb-3">
+              <label class="form-label text-light"><strong>Email:</strong></label>
+              <input
+                type="email"
+                name="email"
+                class="form-control form-control-sm"
+                value="{{ old('email', $user->email) }}"
+                required
+              />
+              @error('email') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
-            <div class="mb-2">
-              <label class="form-label text-light">New Password</label>
-              <input type="password" class="form-control form-control-sm" />
+
+            <div class="mb-3">
+              <label class="form-label text-light"><strong>Phone:</strong></label>
+              <input
+                type="text"
+                name="phone"
+                class="form-control form-control-sm"
+                value="{{ old('phone', $user->phone) }}"
+              />
+              @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
-            <div class="mb-2">
-              <label class="form-label text-light">Confirm New Password</label>
-              <input type="password" class="form-control form-control-sm" />
-            </div>
-            <button class="btn btn-warning btn-sm mt-2">Update Password</button>
-            <button class="btn btn-secondary btn-sm mt-2 ms-2 cancel-password">
-              Cancel
-            </button>
-          </div>
+
+            <button class="btn btn-custom btn-sm" type="submit">Update Profile</button>
+          </form>
         </div>
       </div>
-
-      <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-custom btn-sm edit-btn">
-          <i class="fas fa-edit"></i> Edit Profile
-        </button>
-        <button class="btn btn-outline-light btn-sm password-btn">
-          <i class="fas fa-key"></i> Change Password
-        </button>
-      </div>
-      <div class="logout-footer">
-        <button class="btn btn-danger mt-4 w-100">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-      </div>
     </div>
 
+    <!-- Orders Section -->
     <div id="orders" class="dashboard-section card-dark">
       <h5 class="card-title"><i class="fas fa-shopping-cart"></i> Orders / Purchases</h5>
-      <p>Total Orders: 20</p>
-      <ul>
-        <li>Order #1234 - <span class="text-warning">Pending</span></li>
-        <li>Order #1229 - <span class="text-success">Completed</span></li>
-        <li>Order #1220 - <span class="text-danger">Cancelled</span></li>
-      </ul>
-      <button class="btn btn-custom btn-sm">View All Orders</button>
+      <hr class="border-secondary" />
 
-      <button class="btn btn-secondary btn-sm">Download Invoices</button>
+      @if($orders->isEmpty())
+        <p>No orders found.</p>
+      @else
+        <ul class="list-group mb-3">
+          @foreach($orders as $order)
+            <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+              Order #{{ $order->order_number }}
+              <span class="badge 
+                @if($order->status==='pending') bg-warning 
+                @elseif($order->status==='completed') bg-success 
+                @elseif($order->status==='cancelled') bg-danger 
+                @endif">
+                {{ ucfirst($order->status) }}
+              </span>
+            </li>
+          @endforeach
+        </ul>
+      @endif
+
+      <button class="btn btn-custom btn-sm">View All Orders</button>
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-orders" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
 
+    <!-- Billing Section -->
     <div id="billing" class="dashboard-section card-dark">
       <h5 class="card-title"><i class="fas fa-credit-card"></i> Payment & Billing Info</h5>
-      <p>Saved Method: Visa ending in 1234</p>
-      <p>Billing Address: Dhaka, Bangladesh</p>
-      <p>Recent Transactions:</p>
-      <ul>
-        <li>BDT 1000 - 2025-05-10</li>
-        <li>BDT 500 - 2025-05-01</li>
-      </ul>
+      <hr class="border-secondary" />
+
+      @if($transactions->isEmpty())
+        <p>No billing transactions yet.</p>
+      @else
+        <ul class="list-group mb-3">
+          @foreach($transactions as $tx)
+            <li class="list-group-item bg-dark text-white d-flex justify-content-between">
+              BDT {{ number_format($tx->amount, 2) }}
+              <small class="text-muted">{{ $tx->created_at->format('Y-m-d') }}</small>
+            </li>
+          @endforeach
+        </ul>
+      @endif
+
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-billing" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
 
+    <!-- Notifications Section -->
     <div id="notifications" class="dashboard-section card-dark">
       <h5 class="card-title"><i class="fas fa-bell"></i> Notifications</h5>
-      <ul>
-        <li>New top-up offer available</li>
-        <li>Your order #1234 is pending confirmation</li>
-      </ul>
+      <hr class="border-secondary" />
+
+      @if($notifications->isEmpty())
+        <p>No new notifications.</p>
+      @else
+        <ul class="list-group mb-3">
+          @foreach($notifications as $note)
+            <li class="list-group-item bg-dark text-white">
+              {{ $note->data['message'] ?? $note->data['title'] }}
+              <br>
+              <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
+            </li>
+          @endforeach
+        </ul>
+      @endif
+
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-notifications" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
 
+    <!-- Settings Section -->
     <div id="settings" class="dashboard-section card-dark">
       <h5 class="card-title"><i class="fas fa-cog"></i> Settings / Preferences</h5>
-      <p>Language: English</p>
-      <p>Timezone: Asia/Dhaka</p>
-      <p>Notifications: Enabled</p>
+      <hr class="border-secondary" />
+
+      <p>Customize your dashboard preferences here.</p>
+
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-settings" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
 
+    <!-- Support Section -->
     <div id="support" class="dashboard-section card-dark">
-      <h5 class="card-title"><i class="fas fa-headset"></i> Support / Help</h5>
-      <p><a href="#" class="text-info">Submit a support ticket</a></p>
-      <p>Live Chat: <span class="text-success">Online</span></p>
+      <h5 class="card-title"><i class="fas fa-headset"></i> Support / Contact</h5>
+      <hr class="border-secondary" />
+
+      <p>Contact our support team for assistance.</p>
+
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-support" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
 
+    <!-- Security Section -->
     <div id="security" class="dashboard-section card-dark">
-      <h5 class="card-title"><i class="fas fa-shield-alt"></i> Activity Logs / Security</h5>
-      <p>Last login: 2025-05-17, Device: Chrome on Windows</p>
-      <p>IP: 192.168.1.100</p>
-      <p>Active Sessions: 2</p>
+      <h5 class="card-title"><i class="fas fa-shield-alt"></i> Security Settings</h5>
+      <hr class="border-secondary" />
+
+      <p>Manage your security preferences here.</p>
+
       <div class="logout-footer">
-        <button class="btn btn-danger">Logout</button>
+        <form id="logout-form-security" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
       </div>
     </div>
+
+    <!-- Password Change Section -->
+    <div id="password-change" class="dashboard-section card-dark">
+      <h5 class="card-title"><i class="fas fa-key"></i> Change Password</h5>
+      <hr class="border-secondary" />
+
+      <form method="POST" action="{{ route('password.update') }}" autocomplete="off">
+        @csrf
+
+        <div class="mb-3">
+          <label for="current_password" class="form-label text-light">Current Password</label>
+          <input
+            type="password"
+            name="current_password"
+            id="current_password"
+            class="form-control form-control-sm"
+            required
+            autocomplete="new-password"
+          />
+          @error('current_password')<div class="text-danger">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label text-light">New Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            class="form-control form-control-sm"
+            required
+            autocomplete="new-password"
+          />
+          @error('password')<div class="text-danger">{{ $message }}</div>@enderror
+        </div>
+
+        <div class="mb-3">
+          <label for="password_confirmation" class="form-label text-light">Confirm New Password</label>
+          <input
+            type="password"
+            name="password_confirmation"
+            id="password_confirmation"
+            class="form-control form-control-sm"
+            required
+            autocomplete="new-password"
+          />
+        </div>
+
+        <button type="submit" class="btn btn-custom btn-sm">Update Password</button>
+      </form>
+
+      <div class="logout-footer mt-3">
+        <form id="logout-form-password" method="POST" action="{{ route('logout') }}">
+          @csrf
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+      </div>
+    </div>
+
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Logout form for sidebar links (hidden) -->
+  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+  </form>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
   <script>
-    $('.sidebar a').on('click', function (e) {
-      e.preventDefault();
-      $('.sidebar a').removeClass('active');
-      $(this).addClass('active');
-      let target = $(this).attr('href');
-      $('.dashboard-section').removeClass('active');
-      $(target).addClass('active');
-      if (window.innerWidth < 992) {
+    // Sidebar navigation link active toggle and section display
+    document.querySelectorAll('.sidebar a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = link.getAttribute('href').substring(1);
+
+        // Hide all sections
+        document.querySelectorAll('.dashboard-section').forEach(section => {
+          section.classList.remove('active');
+        });
+
+        // Remove active class from all sidebar links
+        document.querySelectorAll('.sidebar a').forEach(nav => {
+          nav.classList.remove('active');
+        });
+
+        // Show target section and highlight link
+        document.getElementById(target).classList.add('active');
+        link.classList.add('active');
+
+        // Close offcanvas on mobile after clicking a link
         const offcanvasEl = document.getElementById('sidebarMobile');
-        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-        bsOffcanvas.hide();
-      }
+        if (offcanvasEl.classList.contains('show')) {
+          const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+          bsOffcanvas.hide();
+        }
+      });
     });
 
-    // Toggle profile edit and password forms
-    document.querySelector('.edit-btn').addEventListener('click', function () {
-      document.querySelector('.profile-view').classList.add('d-none');
-      document.querySelector('.profile-edit').classList.remove('d-none');
-      document.querySelector('.change-password').classList.add('d-none');
+    // Logout links (desktop & mobile)
+    document.getElementById('logout-link-desktop').addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('logout-form').submit();
     });
 
-    document.querySelector('.cancel-edit').addEventListener('click', function () {
-      document.querySelector('.profile-view').classList.remove('d-none');
-      document.querySelector('.profile-edit').classList.add('d-none');
-    });
-
-    document.querySelector('.password-btn').addEventListener('click', function () {
-      document.querySelector('.profile-view').classList.add('d-none');
-      document.querySelector('.profile-edit').classList.add('d-none');
-      document.querySelector('.change-password').classList.remove('d-none');
-    });
-
-    document.querySelector('.cancel-password').addEventListener('click', function () {
-      document.querySelector('.change-password').classList.add('d-none');
-      document.querySelector('.profile-view').classList.remove('d-none');
+    document.getElementById('logout-link-mobile').addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('logout-form').submit();
     });
   </script>
 </body>

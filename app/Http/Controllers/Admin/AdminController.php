@@ -20,7 +20,7 @@ class AdminController extends Controller
         $exchangeRate = ExchangeRate::first();
 
         // Get the logged-in admin's latest 10 unread notifications
-        $notifications = Auth::user()->unreadNotifications()->take(10)->get();
+        $notifications = auth()->check() ? auth()->user()->unreadNotifications : [];
 
         return view('admin.dashboard', compact(
             'totalOrders',

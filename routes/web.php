@@ -208,3 +208,82 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 
 
 Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+
+
+Route::get('/profile', [YourController::class, 'profile'])->middleware('auth');
+
+
+use App\Http\Controllers\ProfileController;
+
+Route::get('/profile', [ProfileController::class, 'profile'])->middleware('auth');
+
+
+use Illuminate\Support\Facades\Auth;
+
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    return view('dashboard', compact('user'));
+})->middleware(['auth'])->name('dashboard');
+
+
+
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update')->middleware('auth');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+
+
+Route::middleware(['auth'])->group(function () {
+    // Show dashboard
+    Route::get('/dashboard', [ProfileController::class, 'index'])->name('dashboard');
+
+    // Handle “Update Profile” form (name, email, phone)
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])
+         ->name('profile.update');
+
+    // Handle “Change Password” form
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])
+         ->name('profile.password.update');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+});
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [ProfileController::class, 'index'])->name('dashboard');
+
+    Route::post('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.updatePassword');
+
+    Route::post('/logout', function () {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        return redirect('/');
+    })->name('logout');
+});
+
+
+use App\Http\Controllers\DashboardController;
+
+
+Route::middleware(['auth'])->group(function () {
+    // Show dashboard (all sections)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profile update
+    Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+
+    // Password update
+    Route::post('/profile/password', [DashboardController::class, 'updatePassword'])
+         ->name('profile.password.update');
+
+    // (Optional) Other AJAX or form routes if you need them, e.g. to mark notifications as read, etc.
+});
