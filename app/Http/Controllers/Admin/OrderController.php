@@ -15,7 +15,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\OrderCompleted;
 
-
 class OrderController extends Controller
 {
     /**
@@ -69,7 +68,7 @@ class OrderController extends Controller
 
             // Create the order in the database
             $order = Order::create([
-                'user_id'           => auth()->id(), 
+                'user_id'           => auth()->id(),
                 'email'             => $validated['email'],
                 'game_uid'          => $validated['game_uid'],
                 'sender_number'     => $validated['sender_number'],
@@ -87,18 +86,20 @@ class OrderController extends Controller
             // ————————————————
             // Insert into `transactions` table immediately after order creation:
             Transaction::create([
-                'user_id'    => auth()->id(),
-                'amount'     => $discountedPrice,
-                'currency'   => 'BDT', // or use a request field if dynamic
-                'status'     => 'completed', 
-                'description'=> 'Order #' . $order->id . ' for Game UID: ' . $order->game_uid,
+                'user_id'     => auth()->id(),
+                'amount'      => $discountedPrice,
+                'currency'    => 'BDT', // or use a request field if dynamic
+                'status'      => 'completed',
+                'description' => 'Order #' . $order->id . ' for Game UID: ' . $order->game_uid,
             ]);
             // ————————————————
 
             // Load relations for the order (if needed in notification)
             $order->load(['user', 'game', 'product']);
 
-            // Notify all admins about the new order (existing Notification system)
+            // Notify all admins about the new order.
+            // Since NewOrderNotification now includes both 'database' and 'mail' channels,
+            // this single call will store a database notification and also send an email.
             $admins = Admin::all();
             Notification::send($admins, new NewOrderNotification($order));
 
@@ -171,10 +172,10 @@ class OrderController extends Controller
             $order->status = 'completed';
             $order->save();
 
-        //  Send notification to user
-        if ($order->user) {
-            $order->user->notify(new OrderCompleted($order));
-        }
+            // Send notification to user when order is completed
+            if ($order->user) {
+                $order->user->notify(new OrderCompleted($order));
+            }
 
             // Send order completed notification using the service
             Web3FormNotifier::sendOrderCompleted($order);

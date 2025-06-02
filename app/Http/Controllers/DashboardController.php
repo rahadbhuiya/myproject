@@ -34,9 +34,11 @@ class DashboardController extends Controller
                                    ->get();
 
         // Notifications (Laravel built-in)
-        $notifications = $user->notifications()
-                              ->latest()
-                              ->get();
+        // $notifications = $user->notifications()
+        //                       ->latest()
+        //                       ->get();
+                // Get all notifications of current user
+        $notifications = Auth::user()->notifications()->latest()->get();
 
         // User preferences with fallback
         $preferences = [
@@ -75,7 +77,7 @@ class DashboardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function markNotificationRead(int $id)
+    public function markNotificationRead($id)
     {
         $notification = Auth::user()
                             ->notifications()

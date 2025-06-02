@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
 
 class NewOrderNotification extends Notification
 {
@@ -35,7 +36,30 @@ class NewOrderNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database', 'mail']; // Add 'mail' to enable email notifications
+    }
+
+    /**
+     * Format the notification for email delivery.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        $order = $this->order;
+
+        return (new MailMessage)
+            ->subject('New Order Received - #' . $order->id)
+            ->greeting('Hello Admin,')
+            ->line('A new order has been placed.')
+            ->line('Order ID: #' . $order->id)
+            ->line('User: ' . ($order->user->name ?? 'Guest'))
+            ->line('Game UID: ' . $order->game_uid)
+            ->line('Amount: ' . number_format($order->final_price, 2) . ' BDT')
+            ->line('Placed at: ' . $order->created_at->toDayDateTimeString())
+            ->action('View Order', route('admin.orders.show', $order->id))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -47,17 +71,16 @@ class NewOrderNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'title'    => 'New Order Placed',
-            'order_id' => $this->order->id,
-            'user'     => $this->order->user->name ?? 'Guest',
-            'amount'   => $this->order->total ?? null,
-            'placed_at'=> $this->order->created_at->toDateTimeString(),
+            'title'     => 'New Order Placed',
+            'order_id'  => $this->order->id,
+            'user'      => $this->order->user->name ?? 'Guest',
+            'amount'    => $this->order->total ?? null,
+            'placed_at' => $this->order->created_at->toDateTimeString(),
         ];
     }
 
     /**
-     * Get the array representation of the notification.
-     * (fallback, not used by database channel)
+     * Fallback array representation (not used by database or mail).
      *
      * @param  mixed  $notifiable
      * @return array<string, mixed>

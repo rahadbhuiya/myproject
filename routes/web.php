@@ -387,3 +387,20 @@ Route::get('/test-email', function() {
     });
     return 'Test email sent';
 });
+
+
+
+
+use App\Mail\NewOrderMail;
+
+Route::get('/send-test-mail', function () {
+    $order = Order::latest()->first(); // Or use a specific order ID
+
+    if (!$order) {
+        abort(404, 'No order found to test email.');
+    }
+
+    Mail::to('kalachanstore@gmail.com')->send(new NewOrderMail($order));
+
+    return 'Test email sent!';
+});

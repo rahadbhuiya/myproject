@@ -309,63 +309,115 @@
         </form>
       </div>
     </div>
-
-    <!-- Notifications Section -->
-    <div id="notifications"
-        class="dashboard-section card-dark p-4 rounded shadow"
-        style="background-color: #1e1e2f; max-height: 400px; overflow-y: auto;">
-        <h5 class="card-title text-white mb-3">
-            <i class="fas fa-bell me-2"></i> Notifications
-        </h5>
-        <hr class="border-secondary" />
-
-        @if($notifications->isEmpty())
-            <div class="text-center py-4">
-                <p class="text-muted">No new notifications.</p>
-            </div>
-        @else
-            <ul class="list-group mb-3">
-                @foreach($notifications as $note)
-                    <li class="list-group-item d-flex justify-content-between align-items-center 
-                                  bg-dark text-white mb-2 rounded shadow-sm"
-                        style="border: 1px solid #333;">
-                        <div class="notification-message flex-grow-1">
-                            {{ $note->data['message'] ?? $note->data['title'] ?? 'New Notification' }}
-                        </div>
-                        <small class="text-muted ms-3 me-3" style="font-size: 0.8rem;">
-                            {{ $note->created_at->diffForHumans() }}
-                        </small>
-
-                        {{-- Mark As Read Button only if unread --}}
-                        @if(is_null($note->read_at))
-                            <form action="{{ route('notifications.markRead', $note->id) }}" method="POST" class="m-0 p-0">
-                                @csrf
-                                <button type="submit"
-                                        class="btn btn-sm btn-outline-light"
-                                        title="Mark as Read"
-                                        style="font-size: 0.9rem; line-height: 1;">
-                                    <i class="fas fa-check"></i>
-                                </button>
-                            </form>
-                        @else
-                            <span class="badge bg-success">Read</span>
-                        @endif
-                    </li>
-                @endforeach
-            </ul>
+ <!-- Notification Section -->
+<div id="notifications"
+     class="dashboard-section card-dark p-4 rounded shadow"
+     style="background-color: #1e1e2f; max-height: 400px; overflow-y: auto;">
+    <h5 class="card-title text-white mb-3">
+        <i class="fas fa-bell me-2"></i> Notifications
+        {{-- Red dot indicator for unread notifications --}}
+        @if($notifications->whereNull('read_at')->isNotEmpty())
+            <span style="
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                background-color: red;
+                border-radius: 50%;
+                margin-left: 8px;
+                vertical-align: middle;
+                animation: pulse 1.5s infinite;
+            "></span>
         @endif
+    </h5>
+    <hr class="border-secondary" />
 
-        <div class="logout-footer text-center mt-4">
-            <form id="logout-form-notifications" method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                        class="btn btn-danger w-100 py-2 fw-semibold rounded-pill"
-                        style="font-size: 1rem;">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </button>
-            </form>
+    @if($notifications->isEmpty())
+        <div class="text-center py-4">
+            <p class="text-muted">No new notifications.</p>
         </div>
+    @else
+        <ul class="list-group mb-3">
+            @foreach($notifications as $note)
+                <li class="list-group-item d-flex justify-content-between align-items-center 
+                              bg-dark text-white mb-2 rounded shadow-sm"
+                    style="border: 1px solid #333;">
+                    <div class="notification-message flex-grow-1">
+                        {{ $note->data['message'] ?? $note->data['title'] ?? 'New Notification' }}
+                    </div>
+                    <small class="text-muted ms-3 me-3" style="font-size: 0.8rem;">
+                        {{ $note->created_at->diffForHumans() }}
+                    </small>
+
+                    {{-- Mark As Read Button only if unread --}}
+                    @if(is_null($note->read_at))
+                        <form action="{{ route('notifications.markRead', $note->id) }}" method="POST" class="m-0 p-0">
+                            @csrf
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-light"
+                                    title="Mark as Read"
+                                    style="font-size: 0.9rem; line-height: 1;">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </form>
+                    @else
+                        <span class="badge bg-success">Read</span>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+    @endif
+
+    <div class="logout-footer text-center mt-4">
+        <form id="logout-form-notifications" method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                    class="btn btn-danger w-100 py-2 fw-semibold rounded-pill"
+                    style="font-size: 1rem;">
+                <i class="fas fa-sign-out-alt me-1"></i> Logout
+            </button>
+        </form>
     </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+        }
+    }
+
+    /* Custom scrollbar styles for #notifications */
+    #notifications {
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #ff4d4d #1e1e2f; /* thumb and track */
+    }
+
+    /* WebKit browsers */
+    #notifications::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #notifications::-webkit-scrollbar-track {
+        background: #1e1e2f;
+        border-radius: 8px;
+    }
+
+    #notifications::-webkit-scrollbar-thumb {
+        background-color: #ff4d4d;
+        border-radius: 8px;
+        border: 2px solid #1e1e2f;
+    }
+
+    #notifications::-webkit-scrollbar-thumb:hover {
+        background-color: #ff1a1a;
+    }
+</style>
 
     <!-- Settings Section -->
     <div id="settings" class="dashboard-section card-dark">

@@ -1,6 +1,6 @@
 @extends('web.layouts.app')
 @section('title', 'Home')
-@section('description', 'Playhost - Game Hosting Website Template')
+@section('description', 'KalaChan Store')
 @section('content')
 
         

@@ -95,7 +95,7 @@
           @forelse ($orders as $order)
           <tr>
             <td>{{ $order->id }}</td>
-            <td>{{ $order->user->name ?? 'N/A' }}</td>
+            <td>{{ $order->user ? $order->user->name : 'Guest' }}</td>
             <td>{{ $order->game->name ?? 'N/A' }}</td>
             <td>{{ $order->product->product_name ?? 'N/A' }}</td>
             <td>{{ number_format($order->price, 2) }} BDT</td>
