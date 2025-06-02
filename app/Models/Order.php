@@ -4,36 +4,48 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Game;
+use App\Models\TopUpProduct;
 
 class Order extends Model
 {
     use HasFactory;
 
-    // Mass assignable attributes (fillable)
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'user_id',             // User who placed the order (nullable if guest)
-        'email',               // Email of the buyer
-        'game_uid',            // User's game ID or account identifier
+        'user_id',             // (nullable if guest)
+        'email',               // Buyer’s email
+        'game_uid',            // Game account identifier
         'sender_number',       // Phone or sender number for payment
-        'transaction_id',      // Unique transaction/payment ID
-        'product_id',          // Related TopUpProduct ID
-        'top_up_product_id',   // Optional: related TopUpProduct ID if different
+        'transaction_id',      // Unique payment/transaction ID
+        'product_id',          // Primary TopUpProduct ID
+        'top_up_product_id',   // Optional alternate TopUpProduct ID
         'game_id',             // Related Game ID
         'payment_method',      // Payment method used
-        'price',               // Price paid
-        'status',              // Order status e.g. pending, completed
-        'discount',            // Discount applied to the order (percentage)
+        'price',               // Amount paid
+        'status',              // Order status: e.g., pending, completed, failed
+        'discount',            // Discount percentage applied
     ];
 
-    // Cast the 'price' and 'discount' to a decimal type for calculations
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'price' => 'decimal:2',
+        'price'    => 'decimal:2',
         'discount' => 'decimal:2',
     ];
 
     /**
-     * Relationship: Order belongs to a User (optional).
-     * Useful if you have registered users.
+     * An order optionally belongs to a user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user()
     {
@@ -41,7 +53,9 @@ class Order extends Model
     }
 
     /**
-     * Relationship: Order belongs to a Game.
+     * An order belongs to a game.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function game()
     {
@@ -49,7 +63,9 @@ class Order extends Model
     }
 
     /**
-     * Relationship: Order belongs to a TopUpProduct through product_id.
+     * An order belongs to a TopUpProduct via product_id.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function product()
     {
@@ -57,8 +73,9 @@ class Order extends Model
     }
 
     /**
-     * Relationship: Optional link to a TopUpProduct through top_up_product_id.
-     * This can be used if you have a separate column for some reason.
+     * An order optionally belongs to a TopUpProduct via top_up_product_id.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function topUpProduct()
     {
@@ -66,14 +83,13 @@ class Order extends Model
     }
 
     /**
-     * Accessor to calculate the final price after discount.
-     * If there's no discount, it returns the original price.
+     * Accessor: final price after applying discount.
      *
      * @return float
      */
-    public function getFinalPriceAttribute()
+    public function getFinalPriceAttribute(): float
     {
-        if ($this->discount) {
+        if ($this->discount > 0) {
             $discountAmount = ($this->price * $this->discount) / 100;
             return $this->price - $discountAmount;
         }
@@ -82,42 +98,46 @@ class Order extends Model
     }
 
     /**
-     * Accessor to display the discount as a formatted string.
-     *
-     * @return string|null
-     */
-    public function getDiscountFormattedAttribute()
-    {
-        return $this->discount ? $this->discount . '%' : 'No Discount';
-    }
-
-    /**
-     * Accessor to return the price formatted with BDT currency.
+     * Accessor: formatted price with currency (BDT).
      *
      * @return string
      */
-    public function getPriceFormattedAttribute()
+    public function getPriceFormattedAttribute(): string
     {
         return number_format($this->price, 2) . ' BDT';
     }
 
     /**
-     * Accessor to return the final price formatted with BDT currency.
+     * Accessor: formatted final price with currency (BDT).
      *
      * @return string
      */
-    public function getFinalPriceFormattedAttribute()
+    public function getFinalPriceFormattedAttribute(): string
     {
         return number_format($this->final_price, 2) . ' BDT';
     }
 
     /**
-     * Accessor to return the discount as a percentage.
+     * Accessor: discount as a percentage string.
      *
      * @return string
      */
-    public function getDiscountPercentageAttribute()
+    public function getDiscountFormattedAttribute(): string
     {
-        return $this->discount ? $this->discount . '%' : 'No Discount';
+        return $this->discount > 0
+            ? $this->discount . '%'
+            : 'No Discount';
+    }
+
+    /**
+     * Accessor: discount percentage or 'No Discount'.
+     *
+     * @return string
+     */
+    public function getDiscountPercentageAttribute(): string
+    {
+        return $this->discount > 0
+            ? $this->discount . '%'
+            : 'No Discount';
     }
 }

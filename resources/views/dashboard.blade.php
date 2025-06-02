@@ -15,6 +15,9 @@
     rel="stylesheet"
   />
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       background-color: #0f0f10;
       color: #e0e0e0;
@@ -223,7 +226,6 @@
               @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
 
-
             <button class="btn btn-custom btn-sm" type="submit">Update Profile</button>
           </form>
         </div>
@@ -272,8 +274,6 @@
         </form>
       </div>
     </div>
-
-
 
     <!-- Billing Section -->
     <div id="billing" class="dashboard-section card-dark">
@@ -372,9 +372,7 @@
       <h5 class="card-title"><i class="fas fa-cog"></i> Settings / Preferences</h5>
       <hr class="border-secondary" />
 
-      <!-- <p>Customize your dashboard preferences here.</p> -->
        <p>Not available right now.</p>
-
 
       <div class="logout-footer">
         <form id="logout-form-settings" method="POST" action="{{ route('logout') }}">
@@ -404,9 +402,7 @@
       <h5 class="card-title"><i class="fas fa-shield-alt"></i> Security Settings</h5>
       <hr class="border-secondary" />
 
-      <!-- <p>Manage your security preferences here.</p> -->
        <p>Not available right now.</p>
-
 
       <div class="logout-footer">
         <form id="logout-form-security" method="POST" action="{{ route('logout') }}">
@@ -488,45 +484,57 @@
       </div>
     </div>
 
+  </div> <!-- /.main-content -->
 
   <!-- Logout form for sidebar links (hidden) -->
   <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
   </form>
 
-  <!-- Bootstrap JS and dependencies -->
+  <!-- Bootstrap JS Bundle (Popper included) -->
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
   ></script>
 
   <script>
-    // Sidebar navigation link active toggle and section display
-    document.querySelectorAll('.sidebar a[href^="#"]').forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        const target = link.getAttribute('href').substring(1);
+    document.addEventListener("DOMContentLoaded", () => {
+      const links = document.querySelectorAll(".sidebar a[href^='#']");
+      const sections = document.querySelectorAll(".dashboard-section");
 
-        // Hide all sections
-        document.querySelectorAll('.dashboard-section').forEach(section => {
-          section.classList.remove('active');
-        });
-
-        // Remove active class from all sidebar links
-        document.querySelectorAll('.sidebar a').forEach(nav => {
-          nav.classList.remove('active');
-        });
-
-        // Show target section and highlight link
-        document.getElementById(target).classList.add('active');
-        link.classList.add('active');
-
-        // Close offcanvas on mobile after clicking a link
-        const offcanvasEl = document.getElementById('sidebarMobile');
-        if (offcanvasEl.classList.contains('show')) {
-          const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-          bsOffcanvas.hide();
+      function showSection(id) {
+        sections.forEach(sec => sec.classList.remove("active"));
+        const target = document.querySelector(id);
+        if (target) {
+          target.classList.add("active");
         }
+      }
+
+      links.forEach(link => {
+        link.addEventListener("click", e => {
+          const href = link.getAttribute("href");
+          if (href.startsWith("#")) {
+            e.preventDefault();
+            // Remove active class from all links
+            links.forEach(l => l.classList.remove("active"));
+            // Add active class to clicked link
+            link.classList.add("active");
+            showSection(href);
+
+            // Update URL without page jump
+            history.pushState(null, "", href);
+
+            // Close offcanvas on mobile if open
+            const offcanvasEl = document.getElementById('sidebarMobile');
+            if (offcanvasEl.classList.contains('show')) {
+              const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+              bsOffcanvas.hide();
+            }
+          }
+        });
       });
+
+      // Show the section based on current hash (or default to #profile)
+      showSection(window.location.hash || "#profile");
     });
 
     // Logout links (desktop & mobile)

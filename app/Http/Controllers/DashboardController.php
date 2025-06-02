@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProfileModel;    // Assuming this is your orders model
+use App\Models\ProfileModel;       // Your orders model
 use App\Models\Transaction;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ use Illuminate\Validation\Rules\Password;
 class DashboardController extends Controller
 {
     /**
-     * Display the authenticated user's dashboard with orders, transactions, notifications, etc.
+     * Display the authenticated user's dashboard.
      *
      * @return \Illuminate\View\View
      */
@@ -22,38 +22,38 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // 1) Fetch all orders placed by this user, eager loading 'product' relation, ordered by newest first
+        // Orders placed by user with related product info
         $orders = ProfileModel::where('user_id', $user->id)
                               ->with('product')
                               ->latest()
                               ->get();
 
-        // 2) Fetch all billing transactions for this user, ordered by newest first
+        // User's billing transactions
         $transactions = Transaction::where('user_id', $user->id)
                                    ->latest()
                                    ->get();
 
-        // 3) Fetch all notifications for this user, ordered by newest first
+        // Notifications (Laravel built-in)
         $notifications = $user->notifications()
                               ->latest()
                               ->get();
 
-        // 4) User preferences with fallback defaults
+        // User preferences with fallback
         $preferences = [
             'language'              => $user->language              ?? 'English',
             'timezone'              => $user->timezone              ?? 'Asia/Dhaka',
             'notifications_enabled' => $user->notifications_enabled ?? true,
         ];
 
-        // 5) Fetch all support tickets submitted by this user, newest first
+        // Support tickets submitted by user
         $supportTickets = SupportTicket::where('user_id', $user->id)
                                        ->latest()
                                        ->get();
 
-        // 6) Security-related info (ensure these columns exist in users table)
+        // Security and session-related info
         $security = [
-            'last_login_at'     => $user->last_login_at?->format('Y-m-d H:i') ?? null,
-            'last_login_ip'     => $user->last_login_ip ?? 'Unknown',
+            'last_login_at'     => optional($user->last_login_at)->format('Y-m-d H:i') ?? null,
+            'last_login_ip'     => $user->last_login_ip     ?? 'Unknown',
             'active_sessions'   => $user->active_sessions_count ?? 1,
             'last_login_device' => $user->last_login_device ?? 'Unknown',
         ];
@@ -75,7 +75,7 @@ class DashboardController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function markNotificationRead($id)
+    public function markNotificationRead(int $id)
     {
         $notification = Auth::user()
                             ->notifications()
@@ -123,8 +123,9 @@ class DashboardController extends Controller
         ]);
 
         $user = Auth::user();
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
 
         return redirect()
             ->route('dashboard')

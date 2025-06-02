@@ -314,3 +314,76 @@ Route::post('/notifications/{id}/read', [App\Http\Controllers\DashboardControlle
 Route::post('/notifications/{id}/mark-read', [DashboardController::class, 'markNotificationRead'])
     ->name('notifications.markRead')
     ->middleware('auth');
+
+
+
+
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
+// 1. Show the "verify your email" notice
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// 2. Handle the verification link click
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill(); // Marks user as verified
+
+    return redirect('/dashboard'); // Redirect after verification
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// 3. Resend the verification email
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
+
+
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    $orders = $user->orders()->with('product')->get(); // assuming user hasMany orders
+
+    return view('dashboard', compact('user', 'orders'));
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+
+
+use App\Models\Order;
+
+Route::get('/dashboard', function () {
+    $user = Auth::user();
+    $transactions = Order::where('user_id', $user->id)->get();
+
+    return view('dashboard', compact('user', 'transactions'));
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+use App\Http\Controllers\Auth\EmailVerificationController;
+
+Route::get('/email/verify/{id}/{hash}', EmailVerificationController::class)
+    ->middleware(['auth', 'signed', 'throttle:6,1'])
+    ->name('verification.verify');
+Route::get('/email/verified', function () {
+    return view('auth.verified');
+})->middleware('auth');
+
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-email', function() {
+    Mail::raw('Test email content', function($message) {
+        $message->to('kalachanstore33@gmail.com')
+                ->subject('Test Email');
+    });
+    return 'Test email sent';
+});
