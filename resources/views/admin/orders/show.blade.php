@@ -9,7 +9,7 @@
 
   <div class="card-body">
     <!-- User Information -->
-    <p><strong>User:</strong> {{ $order->user->name ?? 'N/A' }}</p>
+    <p><strong>Customer Name:</strong> {{ $order->user->name ?? 'Guest' }}</p>
     <p><strong>User Email:</strong> {{ $order->email ?? 'N/A' }}</p>
 
     <!-- Game Information -->

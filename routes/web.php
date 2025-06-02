@@ -287,3 +287,30 @@ Route::middleware(['auth'])->group(function () {
 
     // (Optional) Other AJAX or form routes if you need them, e.g. to mark notifications as read, etc.
 });
+
+
+Route::put('/user/password', [DashboardController::class, 'updatePassword'])->name('password.update')->middleware('auth');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+});
+
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/admin/orders/{order}/complete', [AdminController::class, 'completeOrder'])->name('admin.orders.complete');
+});
+Route::post('/admin/orders/{id}/complete', [OrderController::class, 'markAsComplete'])->name('admin.orders.complete');
+Route::post('/notifications/{id}/read', function ($id) {
+    $notification = auth()->user()->notifications()->findOrFail($id);
+    $notification->markAsRead();
+    return back();
+})->name('notification.read');
+
+
+Route::post('/notifications/{id}/read', [App\Http\Controllers\DashboardController::class, 'markNotificationRead'])
+     ->name('notification.read')
+     ->middleware('auth');
+Route::post('/notifications/{id}/mark-read', [DashboardController::class, 'markNotificationRead'])
+    ->name('notifications.markRead')
+    ->middleware('auth');

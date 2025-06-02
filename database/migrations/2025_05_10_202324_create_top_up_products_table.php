@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('game_id')->constrained()->onDelete('cascade'); 
             $table->string('product_name');
-            $table->integer('amount'); // ✅ Add this line
+            $table->integer('amount'); 
             $table->decimal('discount', 5, 2)->default(0);
             $table->decimal('price', 8, 2); 
             $table->string('delivery_time'); 

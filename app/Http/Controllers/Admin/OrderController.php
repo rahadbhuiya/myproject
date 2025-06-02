@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\TopUpProduct;
 use App\Models\Admin;
+use App\Models\Transaction;          // ← Add this import for creating billing records
 use App\Notifications\NewOrderNotification;
-use App\Services\Web3FormNotifier;  // <-- Add this import
+use App\Services\Web3FormNotifier;    // ← Already present
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\OrderCompleted;
+
 
 class OrderController extends Controller
 {
@@ -40,7 +43,8 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created order, send notification, and redirect.
+     * Store a newly created order, send notification, create a Transaction,
+     * and redirect.
      */
     public function store(Request $request)
     {
@@ -65,6 +69,7 @@ class OrderController extends Controller
 
             // Create the order in the database
             $order = Order::create([
+                'user_id'           => auth()->id(), 
                 'email'             => $validated['email'],
                 'game_uid'          => $validated['game_uid'],
                 'sender_number'     => $validated['sender_number'],
@@ -78,6 +83,17 @@ class OrderController extends Controller
                 'status'            => $validated['status'] ?? 'pending',
                 'top_up_product_id' => $validated['top_up_product_id'] ?? $validated['product_id'],
             ]);
+
+            // ————————————————
+            // Insert into `transactions` table immediately after order creation:
+            Transaction::create([
+                'user_id'    => auth()->id(),
+                'amount'     => $discountedPrice,
+                'currency'   => 'BDT', // or use a request field if dynamic
+                'status'     => 'completed', 
+                'description'=> 'Order #' . $order->id . ' for Game UID: ' . $order->game_uid,
+            ]);
+            // ————————————————
 
             // Load relations for the order (if needed in notification)
             $order->load(['user', 'game', 'product']);
@@ -152,8 +168,13 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         if (strtolower($order->status) === 'pending') {
-            $order->status = 'complete';
+            $order->status = 'completed';
             $order->save();
+
+        //  Send notification to user
+        if ($order->user) {
+            $order->user->notify(new OrderCompleted($order));
+        }
 
             // Send order completed notification using the service
             Web3FormNotifier::sendOrderCompleted($order);

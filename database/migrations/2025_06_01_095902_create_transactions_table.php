@@ -12,13 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('transactions', function (Blueprint $table) {
-            $table->id();                                        // Auto-incrementing ID
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');  // Foreign key to users.id
-            $table->decimal('amount', 10, 2);                    // Amount field (max: 99999999.99)
-            $table->string('currency')->default('USD');          // Currency (default USD)
-            $table->timestamps();                                // created_at, updated_at
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->decimal('amount', 10, 2);
+            $table->string('currency')->default('BDT');
+            $table->string('status')->default('completed'); 
+            $table->string('description')->nullable();
+            $table->timestamps();
         });
-
     }
 
     /**

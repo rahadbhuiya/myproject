@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProfileModel;
+use App\Models\ProfileModel;    // Assuming this is your orders model
 use App\Models\Transaction;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
@@ -13,42 +13,47 @@ use Illuminate\Validation\Rules\Password;
 
 class DashboardController extends Controller
 {
+    /**
+     * Display the authenticated user's dashboard with orders, transactions, notifications, etc.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
         $user = Auth::user();
 
-        // 1) Orders made by this user (using ProfileModel instead of Order)
+        // 1) Fetch all orders placed by this user, eager loading 'product' relation, ordered by newest first
         $orders = ProfileModel::where('user_id', $user->id)
-                              ->orderBy('created_at', 'desc')
+                              ->with('product')
+                              ->latest()
                               ->get();
 
-        // 2) Billing / Transactions (latest 5)
+        // 2) Fetch all billing transactions for this user, ordered by newest first
         $transactions = Transaction::where('user_id', $user->id)
-                                   ->orderBy('created_at', 'desc')
-                                   ->take(5)
+                                   ->latest()
                                    ->get();
 
-        // 3) Notifications for this user
+        // 3) Fetch all notifications for this user, ordered by newest first
         $notifications = $user->notifications()
-                              ->orderBy('created_at', 'desc')
+                              ->latest()
                               ->get();
 
-        // 4) Settings / Preferences (assuming these columns exist on the users table)
+        // 4) User preferences with fallback defaults
         $preferences = [
-            'language'              => $user->language ?? 'English',
-            'timezone'              => $user->timezone ?? 'Asia/Dhaka',
+            'language'              => $user->language              ?? 'English',
+            'timezone'              => $user->timezone              ?? 'Asia/Dhaka',
             'notifications_enabled' => $user->notifications_enabled ?? true,
         ];
 
-        // 5) Support Tickets submitted by this user
+        // 5) Fetch all support tickets submitted by this user, newest first
         $supportTickets = SupportTicket::where('user_id', $user->id)
-                                       ->orderBy('created_at', 'desc')
+                                       ->latest()
                                        ->get();
 
-        // 6) Security / Session info (assuming these columns exist on the users table)
+        // 6) Security-related info (ensure these columns exist in users table)
         $security = [
             'last_login_at'     => $user->last_login_at?->format('Y-m-d H:i') ?? null,
-            'last_login_ip'     => $user->last_login_ip,
+            'last_login_ip'     => $user->last_login_ip ?? 'Unknown',
             'active_sessions'   => $user->active_sessions_count ?? 1,
             'last_login_device' => $user->last_login_device ?? 'Unknown',
         ];
@@ -64,6 +69,29 @@ class DashboardController extends Controller
         ));
     }
 
+    /**
+     * Mark a specific notification as read.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function markNotificationRead($id)
+    {
+        $notification = Auth::user()
+                            ->notifications()
+                            ->findOrFail($id);
+
+        $notification->markAsRead();
+
+        return redirect()->back()->with('status', 'Notification marked as read.');
+    }
+
+    /**
+     * Update the authenticated user's profile information.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -76,10 +104,17 @@ class DashboardController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('dashboard')
-                         ->with('status', 'Profile updated successfully.');
+        return redirect()
+            ->route('dashboard')
+            ->with('status', 'Profile updated successfully.');
     }
 
+    /**
+     * Change the authenticated user's password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updatePassword(Request $request)
     {
         $request->validate([
@@ -91,7 +126,26 @@ class DashboardController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('dashboard')
-                         ->with('status_password', 'Password changed successfully.');
+        return redirect()
+            ->route('dashboard')
+            ->with('status_password', 'Password changed successfully.');
     }
+
+    /**
+     * OPTIONAL: Paginated view for all orders of the authenticated user.
+     *
+     * Uncomment if needed.
+     */
+    /*
+    public function orders()
+    {
+        $user = Auth::user();
+
+        $orders = ProfileModel::where('user_id', $user->id)
+                              ->latest()
+                              ->paginate(15);
+
+        return view('orders.index', compact('orders'));
+    }
+    */
 }

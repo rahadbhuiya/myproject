@@ -218,10 +218,11 @@
                 type="text"
                 name="phone"
                 class="form-control form-control-sm"
-                value="{{ old('phone', $user->phone) }}"
+                value="{{ old('phone') ?? $user->phone }}"
               />
               @error('phone') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
+
 
             <button class="btn btn-custom btn-sm" type="submit">Update Profile</button>
           </form>
@@ -237,24 +238,34 @@
       @if($orders->isEmpty())
         <p>No orders found.</p>
       @else
-        <ul class="list-group mb-3">
-          @foreach($orders as $order)
-            <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-              Order #{{ $order->order_number }}
-              <span class="badge 
-                @if($order->status==='pending') bg-warning 
-                @elseif($order->status==='completed') bg-success 
-                @elseif($order->status==='cancelled') bg-danger 
-                @endif">
-                {{ ucfirst($order->status) }}
-              </span>
-            </li>
-          @endforeach
-        </ul>
+        <div style="max-height: 500px; overflow-y: auto;">
+          <ul class="list-group mb-3">
+            @foreach($orders as $order)
+              <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center flex-column flex-md-row">
+                <div>
+                  {{-- Order Number or ID --}}
+                  <strong>Order #{{ $order->id }}</strong><br>
+                  {{-- Product Name --}}
+                  <small>Product: {{ $order->product->product_name ?? 'No product found' }}</small>
+                </div>
+
+                <span class="badge 
+                  @if($order->status === 'pending') bg-warning 
+                  @elseif($order->status === 'completed') bg-success 
+                  @elseif($order->status === 'cancelled') bg-danger 
+                  @else bg-secondary 
+                  @endif
+                  text-dark
+                  ">
+                  {{ ucfirst($order->status) }}
+                </span>
+              </li>
+            @endforeach
+          </ul>
+        </div>
       @endif
 
-      <button class="btn btn-custom btn-sm">View All Orders</button>
-      <div class="logout-footer">
+      <div class="logout-footer mt-3">
         <form id="logout-form-orders" method="POST" action="{{ route('logout') }}">
           @csrf
           <button type="submit" class="btn btn-danger">Logout</button>
@@ -262,57 +273,98 @@
       </div>
     </div>
 
+
+
     <!-- Billing Section -->
     <div id="billing" class="dashboard-section card-dark">
-      <h5 class="card-title"><i class="fas fa-credit-card"></i> Payment & Billing Info</h5>
+      <h5 class="card-title">
+        <i class="fas fa-credit-card"></i> Payment & Billing Info
+      </h5>
       <hr class="border-secondary" />
 
       @if($transactions->isEmpty())
-        <p>No billing transactions yet.</p>
+        <p class="text-muted">No billing transactions yet.</p>
       @else
-        <ul class="list-group mb-3">
-          @foreach($transactions as $tx)
-            <li class="list-group-item bg-dark text-white d-flex justify-content-between">
-              BDT {{ number_format($tx->amount, 2) }}
-              <small class="text-muted">{{ $tx->created_at->format('Y-m-d') }}</small>
-            </li>
-          @endforeach
-        </ul>
+        <div style="height: 500px; overflow-y: auto; border: 1px solid #666;">
+          <ul class="list-group mb-3">
+            @foreach($transactions as $tx)
+              <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
+                <div>
+                  {{ strtoupper($tx->currency) }} {{ number_format($tx->amount, 2) }}
+                  @if(!empty($tx->description))
+                    <small class="d-block text-muted">{{ $tx->description }}</small>
+                  @endif
+                </div>
+                <small class="text-muted">{{ $tx->created_at->format('Y-m-d') }}</small>
+              </li>
+            @endforeach
+          </ul>
+        </div>
       @endif
 
-      <div class="logout-footer">
+      <div class="logout-footer mt-3">
         <form id="logout-form-billing" method="POST" action="{{ route('logout') }}">
           @csrf
-          <button type="submit" class="btn btn-danger">Logout</button>
+          <button type="submit" class="btn btn-danger w-100">Logout</button>
         </form>
       </div>
     </div>
 
     <!-- Notifications Section -->
-    <div id="notifications" class="dashboard-section card-dark">
-      <h5 class="card-title"><i class="fas fa-bell"></i> Notifications</h5>
-      <hr class="border-secondary" />
+    <div id="notifications"
+        class="dashboard-section card-dark p-4 rounded shadow"
+        style="background-color: #1e1e2f; max-height: 400px; overflow-y: auto;">
+        <h5 class="card-title text-white mb-3">
+            <i class="fas fa-bell me-2"></i> Notifications
+        </h5>
+        <hr class="border-secondary" />
 
-      @if($notifications->isEmpty())
-        <p>No new notifications.</p>
-      @else
-        <ul class="list-group mb-3">
-          @foreach($notifications as $note)
-            <li class="list-group-item bg-dark text-white">
-              {{ $note->data['message'] ?? $note->data['title'] }}
-              <br>
-              <small class="text-muted">{{ $note->created_at->diffForHumans() }}</small>
-            </li>
-          @endforeach
-        </ul>
-      @endif
+        @if($notifications->isEmpty())
+            <div class="text-center py-4">
+                <p class="text-muted">No new notifications.</p>
+            </div>
+        @else
+            <ul class="list-group mb-3">
+                @foreach($notifications as $note)
+                    <li class="list-group-item d-flex justify-content-between align-items-center 
+                                  bg-dark text-white mb-2 rounded shadow-sm"
+                        style="border: 1px solid #333;">
+                        <div class="notification-message flex-grow-1">
+                            {{ $note->data['message'] ?? $note->data['title'] ?? 'New Notification' }}
+                        </div>
+                        <small class="text-muted ms-3 me-3" style="font-size: 0.8rem;">
+                            {{ $note->created_at->diffForHumans() }}
+                        </small>
 
-      <div class="logout-footer">
-        <form id="logout-form-notifications" method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button type="submit" class="btn btn-danger">Logout</button>
-        </form>
-      </div>
+                        {{-- Mark As Read Button only if unread --}}
+                        @if(is_null($note->read_at))
+                            <form action="{{ route('notifications.markRead', $note->id) }}" method="POST" class="m-0 p-0">
+                                @csrf
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-light"
+                                        title="Mark as Read"
+                                        style="font-size: 0.9rem; line-height: 1;">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                        @else
+                            <span class="badge bg-success">Read</span>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        @endif
+
+        <div class="logout-footer text-center mt-4">
+            <form id="logout-form-notifications" method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                        class="btn btn-danger w-100 py-2 fw-semibold rounded-pill"
+                        style="font-size: 1rem;">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </button>
+            </form>
+        </div>
     </div>
 
     <!-- Settings Section -->
@@ -320,7 +372,9 @@
       <h5 class="card-title"><i class="fas fa-cog"></i> Settings / Preferences</h5>
       <hr class="border-secondary" />
 
-      <p>Customize your dashboard preferences here.</p>
+      <!-- <p>Customize your dashboard preferences here.</p> -->
+       <p>Not available right now.</p>
+
 
       <div class="logout-footer">
         <form id="logout-form-settings" method="POST" action="{{ route('logout') }}">
@@ -350,7 +404,9 @@
       <h5 class="card-title"><i class="fas fa-shield-alt"></i> Security Settings</h5>
       <hr class="border-secondary" />
 
-      <p>Manage your security preferences here.</p>
+      <!-- <p>Manage your security preferences here.</p> -->
+       <p>Not available right now.</p>
+
 
       <div class="logout-footer">
         <form id="logout-form-security" method="POST" action="{{ route('logout') }}">
@@ -367,6 +423,14 @@
 
       <form method="POST" action="{{ route('password.update') }}" autocomplete="off">
         @csrf
+        @method('PUT')
+
+        {{-- Success Message --}}
+        @if(session('status_password'))
+          <div class="alert alert-success">
+            {{ session('status_password') }}
+          </div>
+        @endif
 
         <div class="mb-3">
           <label for="current_password" class="form-label text-light">Current Password</label>
@@ -374,11 +438,13 @@
             type="password"
             name="current_password"
             id="current_password"
-            class="form-control form-control-sm"
+            class="form-control form-control-sm @error('current_password') is-invalid @enderror"
             required
             autocomplete="new-password"
           />
-          @error('current_password')<div class="text-danger">{{ $message }}</div>@enderror
+          @error('current_password')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="mb-3">
@@ -387,11 +453,13 @@
             type="password"
             name="password"
             id="password"
-            class="form-control form-control-sm"
+            class="form-control form-control-sm @error('password') is-invalid @enderror"
             required
             autocomplete="new-password"
           />
-          @error('password')<div class="text-danger">{{ $message }}</div>@enderror
+          @error('password')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="mb-3">
@@ -400,10 +468,13 @@
             type="password"
             name="password_confirmation"
             id="password_confirmation"
-            class="form-control form-control-sm"
+            class="form-control form-control-sm @error('password_confirmation') is-invalid @enderror"
             required
             autocomplete="new-password"
           />
+          @error('password_confirmation')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <button type="submit" class="btn btn-custom btn-sm">Update Password</button>
@@ -412,12 +483,11 @@
       <div class="logout-footer mt-3">
         <form id="logout-form-password" method="POST" action="{{ route('logout') }}">
           @csrf
-          <button type="submit" class="btn btn-danger">Logout</button>
+          <button type="submit" class="btn btn-danger w-100">Logout</button>
         </form>
       </div>
     </div>
 
-  </div>
 
   <!-- Logout form for sidebar links (hidden) -->
   <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
