@@ -12,33 +12,21 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Safe delete without violating foreign key constraints
+        Category::query()->delete();
+
+        // Add your custom categories here if needed
         $categories = [
-            [
-                // 'id' => 1,
-                'name' => 'PUBG',
-                'image' => 'https://example.com/images/pubg.png',
-                'description' => 'PlayerUnknown’s Battlegrounds (PUBG) is a battle royale game.'
-            ],
-            [
-                // 'id' => 2,
-                'name' => 'Free Fire',
-                'image' => 'https://example.com/images/freefire.png',
-                'description' => 'Free Fire is a fast-paced battle royale game available on mobile.'
-            ],
-            [
-                // 'id' => 3,
-                'name' => 'Mobile Legends',
-                'image' => 'https://example.com/images/mobilelegends.png',
-                'description' => 'Mobile Legends: Bang Bang is a multiplayer online battle arena (MOBA) game.'
-            ],
-            [
-                // 'id' => 4,
-                'name' => 'Valorant',
-                'image' => 'https://example.com/images/valorant.png',
-                'description' => 'Valorant is a free-to-play first-person hero shooter developed by Riot Games.'
-            ]
+            // Example:
+            // [
+            //     'name' => 'Call of Duty',
+            //     'image' => 'https://example.com/images/cod.png',
+            //     'description' => 'Call of Duty is a popular first-person shooter game.',
+            // ],
         ];
 
-        Category::insert($categories);
+        if (!empty($categories)) {
+            Category::insert($categories);
+        }
     }
 }

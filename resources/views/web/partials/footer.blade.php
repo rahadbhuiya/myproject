@@ -6,7 +6,7 @@
             <div class="col-lg-4">
                 <img src="images/logo.png" alt="" >
                 <div class="spacer-20"></div>
-                <p style="font-size: ">If you encounter any issues, please contact us. Thank you.</p>
+                <p style="font-size: ">If you experience any issues or require assistance, please don't hesitate to contact us. Thank you for your understanding.</p>
                 
                 
                
@@ -76,7 +76,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-6 col-sm-6">
-                   Copyright 2024 - Playhost by SRBThemes
+                   Copyright 2025 - KalaChan store by KalaChan Gaming
                 </div>
                 <div class="col-lg-6 col-sm-6 text-lg-end text-sm-start">
                     <ul class="menu-simple">

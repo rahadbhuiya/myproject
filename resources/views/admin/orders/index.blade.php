@@ -60,9 +60,9 @@
     <!-- Search Section -->
     <div class="d-flex justify-content-between mb-3">
       <div>
-        <a href="{{ route('admin.orders.create') }}" class="btn btn-primary btn-sm">
+        <!-- <a href="{{ route('admin.orders.create') }}" class="btn btn-primary btn-sm">
           <i class="bi bi-plus-circle"></i> Add New Order
-        </a>
+        </a> -->
       </div>
 
       <div>

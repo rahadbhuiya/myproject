@@ -13,31 +13,18 @@ class GameSeeder extends Seeder
      */
     public function run(): void
     {
+        // Safe delete without violating foreign key constraints
+        Game::query()->delete();
+
+        // Add your custom games here
         $games = [
-            [
-                'name' => 'PUBG Mobile',
-                'logo' => 'https://example.com/logos/pubg.png',
-                'description' => 'PUBG Mobile is a popular battle royale game.',
-                'category_name' => 'PUBG',
-            ],
-            [
-                'name' => 'Free Fire',
-                'logo' => 'https://example.com/logos/freefire.png',
-                'description' => 'Free Fire is a survival shooter game available on mobile.',
-                'category_name' => 'Free Fire',
-            ],
-            [
-                'name' => 'Mobile Legends',
-                'logo' => 'https://example.com/logos/mlbb.png',
-                'description' => 'Mobile Legends is a 5v5 MOBA game.',
-                'category_name' => 'Mobile Legends',
-            ],
-            [
-                'name' => 'Valorant',
-                'logo' => 'https://example.com/logos/valorant.png',
-                'description' => 'Valorant is a tactical shooter by Riot Games.',
-                'category_name' => 'Valorant',
-            ],
+            // Example:
+            // [
+            //     'name' => 'Call of Duty: Mobile',
+            //     'logo' => 'https://example.com/logos/codm.png',
+            //     'description' => 'COD Mobile is a fast-paced FPS game.',
+            //     'category_name' => 'Call of Duty',
+            // ],
         ];
 
         foreach ($games as $gameData) {

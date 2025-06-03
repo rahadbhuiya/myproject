@@ -23,9 +23,12 @@ class AdminController extends Controller
         $totalCategories = Category::count();
         $exchangeRate = ExchangeRate::first();
 
-        // Fetch latest 10 unread notifications for the logged-in admin user
-        $notifications = auth()->check()
-            ? auth()->user()->unreadNotifications()->latest()->take(10)->get()
+        // Use admin guard for authentication (recommended for separate admin panel)
+        $admin = Auth::guard('admin')->user();
+
+        // Fetch latest 10 unread notifications for the logged-in admin
+        $notifications = $admin
+            ? $admin->unreadNotifications()->latest()->take(10)->get()
             : collect();
 
         return view('admin.dashboard', compact(
@@ -39,28 +42,26 @@ class AdminController extends Controller
 
     /**
      * Mark a given order as completed and notify the associated user.
-     * 
+     *
      * @param int $orderId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function completeOrder($orderId)
     {
-        // Retrieve the order or fail with 404
         $order = Order::findOrFail($orderId);
 
-        // Prevent re-completing an already completed order
-        if ($order->status === 'completed') {
+        // Prevent re-marking an already completed order
+        if (strtolower($order->status) === 'completed') {
             return redirect()->back()->with('info', 'Order is already completed.');
         }
 
-        // Update order status to completed
+        // Update status to completed
         $order->status = 'completed';
         $order->save();
 
-        // Notify the user about order completion if user exists
-        $user = $order->user; // Make sure 'user' relationship is defined on Order model
-        if ($user) {
-            $user->notify(new OrderCompleted($order));
+        // Notify user if they exist
+        if ($order->user) {
+            $order->user->notify(new OrderCompleted($order));
         }
 
         return redirect()->back()->with('success', 'Order marked as completed and user notified.');

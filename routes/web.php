@@ -404,3 +404,12 @@ Route::get('/send-test-mail', function () {
 
     return 'Test email sent!';
 });
+
+
+// Route::middleware(['auth', 'admin'])->group(function () {
+//     Route::resource('categories', CategoryController::class);
+// });
+
+// Route::middleware(['web', 'auth', 'admin'])->group(function () {
+//     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+// });
