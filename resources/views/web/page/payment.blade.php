@@ -5,6 +5,15 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <style>
+    html, body {
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    *, *::before, *::after {
+        box-sizing: inherit;
+    }
+
     body {
         background: url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
         background-size: cover;
@@ -16,19 +25,12 @@
         border-radius: 12px;
         padding: 30px;
         color: white;
-        height: 100%;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        max-width: 100%;
     }
+
     p {
-        margin-bottom: 0px!important;
-    }
-    .light-card {
-        background-color: #ffffffd9;
-        border-radius: 12px;
-        padding: 25px;
-        color: #000;
-        height: 100%;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0!important;
     }
 
     .form-check img {
@@ -36,34 +38,51 @@
         object-fit: contain;
     }
 
+    .custom-submit-btn {
+        height: 48px;
+        line-height: 1.5;
+        padding: 10px 16px;
+        font-size: 16px;
+    }
+
     @media (max-width: 768px) {
-        .glass-card,
-        .light-card {
+        .glass-card {
             margin-bottom: 30px;
-            height: auto !important;
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .row-cols-3 > * {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .btn {
+            font-size: 14px;
+        }
+
+        .custom-submit-btn {
+            height: 44px;
+            font-size: 14px;
         }
     }
 </style>
-
+<br><br><br><br>
 <div class="container py-5 mt-5">
     <form id="orderForm" action="{{ route('order.store') }}" method="POST">
         @csrf
         <div class="row g-4">
             <div class="col-12 col-lg-4">
-                <div class="glass-card h-auto d-flex flex-column justify-content-center">
+                <div class="glass-card">
                     <h2 class="mb-4 border-bottom pb-2">{{ $product->product_name }}</h2>
-                    <div class="text-sm text-white">
-                        <p><span class="fw-bold text-info">🎮 Game:</span> {{ $product->game->name }}</p>
-                        <p><span class="fw-bold text-warning">💵 Price:</span> {{ $product->price }} BDT</p>
-                        <p><span class="fw-bold text-danger">🎯 Discount:</span> {{ $product->discount ?? 0 }}%</p>
-                        <p><span class="fw-bold text-warning">💵 Final Price:</span>
-                            {{ $product->price - ($product->price * ($product->discount ?? 0) / 100) }} BDT
-                        </p>
-                        <p>
-                            <span class="fw-bold text-danger">📋 Instructions:</span><br>
-                            <span class="whitespace-pre-line">{{ $product->instructions }}</span>
-                        </p>
-                    </div>
+                    <p><strong class="text-info">🎮 TopUp:</strong> {{ $product->game->name }}</p>
+                    <p><strong class="text-warning">💵 Price:</strong> {{ $product->price }} BDT</p>
+                    <p><strong class="text-danger">🎯 Discount:</strong> {{ $product->discount ?? 0 }}%</p>
+                    <p><strong class="text-warning">💵 Final Price:</strong>
+                        {{ $product->price - ($product->price * ($product->discount ?? 0) / 100) }} BDT</p>
+                    <p><strong class="text-danger">📋 Instructions:</strong><br>
+                        <span class="whitespace-pre-line">{{ $product->instructions }}</span></p>
                 </div>
             </div>
 
@@ -85,7 +104,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="payment_method" id="{{ $method['id'] }}" value="{{ $method['id'] }}" @if($index === 0) checked @endif>
                                     <label class="form-check-label" for="{{ $method['id'] }}">
-                                        <img src="{{ asset('fontend/images/payments/' . $method['image']) }}" alt="{{ $method['id'] }}" class="img-fluid">
+                                        <img src="{{ asset('fontend/images/payments/' . $method['image']) }}" alt="{{ $method['id'] }}">
                                     </label>
                                 </div>
                             </div>
@@ -107,7 +126,7 @@
                     <input type="hidden" name="discount" value="{{ $product->discount ?? 0 }}">
 
                     <div id="submitSection">
-                        <button type="submit" class="btn btn-success w-100">PLACE ORDER</button>
+                        <button type="submit" class="btn btn-success w-100 custom-submit-btn">PLACE ORDER</button>
                     </div>
                 </div>
             </div>
@@ -115,17 +134,14 @@
     </form>
 </div>
 
-<!-- jQuery, Validate, SweetAlert -->
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
 <script>
     $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
     const instructionBox = document.getElementById('paymentInstructions');
@@ -136,6 +152,7 @@
     };
 
     instructionBox.innerHTML = instructions['bkash'];
+
     document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
         radio.addEventListener('change', function () {
             instructionBox.innerHTML = instructions[this.value];
@@ -155,26 +172,24 @@
                     beforeSend: function () {
                         $('#submitSection button').prop('disabled', true).text('Placing...');
                     },
-                    success: function (response) {
-                        // Redirect on successful order
+                    success: function () {
                         window.location.href = "{{ route('order.success') }}";
                     },
                     error: function (xhr) {
-                        let errorMessage = 'There is a problem, Please try again.';
+                        let message = 'There is a problem, please try again.';
                         if (xhr.status === 422) {
                             const errors = xhr.responseJSON.errors;
-                            errorMessage = Object.values(errors).map(err => err[0]).join('\n');
+                            message = Object.values(errors).map(err => err[0]).join('\n');
                         }
-                        Swal.fire('Error!', errorMessage, 'error');
+                        Swal.fire('Error!', message, 'error');
                     },
                     complete: function () {
                         $('#submitSection button').prop('disabled', false).text('PLACE ORDER');
                     }
                 });
-                return false; // Prevent default form submission
+                return false;
             }
         });
     });
 </script>
-
 @endsection

@@ -36,6 +36,46 @@
 
   <!-- Custom Style -->
   <link href="{{ asset('backend/assets/css/app-style.css') }}" rel="stylesheet"/>
+
+  <style>
+    /* Make html and body take full height */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: ;
+      background: #f8f9fa;
+      overflow-x: auto; /* allow horizontal scroll */
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #wrapper {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding-bottom: 60px; /* footer height approx */
+    }
+
+    .content-wrapper {
+      flex: 1 0 auto;
+      padding: 70px;
+    }
+
+    footer.footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 50px;
+      background-color: #343a40;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 
 <body class="bg-theme bg-theme1">
@@ -53,12 +93,6 @@
         @yield('content')
         <!-- End Dashboard Content -->
       </div>
-      <!-- End container-fluid -->
-
-      <!-- Start overlay -->
-      <div class="overlay toggle-menu"></div>
-      <!-- End overlay -->
-
     </div>
     <!-- End content-wrapper -->
 
@@ -76,40 +110,6 @@
     </footer>
     <!-- End footer -->
 
-    {{--
-    <!-- start color switcher -->
-    <div class="right-sidebar">
-      <div class="switcher-icon">
-        <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
-      </div>
-      <div class="right-sidebar-content">
-
-        <p class="mb-0">Gaussion Texture</p>
-        <hr>
-
-        <ul class="switcher">
-          <li id="theme1"></li>
-          <li id="theme2"></li>
-          <li id="theme3"></li>
-          <li id="theme4"></li>
-          <li id="theme5"></li>
-          <li id="theme6"></li>
-        </ul>
-
-        <p class="mb-0">Gradient Background</p>
-        <hr>
-
-        <ul class="switcher">
-          <li id="theme7"></li>
-          <li id="theme8"></li>
-          <li id="theme14"></li>
-          <li id="theme15"></li>
-        </ul>
-
-      </div>
-    </div>
-    <!-- end color switcher -->
-    --}}
   </div>
   <!-- End wrapper -->
 

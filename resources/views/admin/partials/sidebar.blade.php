@@ -37,12 +37,12 @@
     
      <li>
         <a href="{{ route('games.index') }}">
-          <i class="zmdi zmdi-view-dashboard"></i> <span>Game </span>
+          <i class="zmdi zmdi-view-dashboard"></i> <span>Product </span>
         </a>
       </li>
       <li>
       <a href="{{ route('products.index') }}">
-        <i class="zmdi zmdi-view-dashboard"></i> <span>Product</span>
+        <i class="zmdi zmdi-view-dashboard"></i> <span>Payment</span>
       </a>
     </li>
       <li>

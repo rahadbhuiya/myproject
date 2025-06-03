@@ -4,7 +4,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h5>Add New Top-Up Product</h5>
+    <h5>Add Payment</h5>
   </div>
 
   <div class="card-body">
@@ -12,7 +12,7 @@
       @csrf
 
       <div class="mb-3">
-        <label for="game_id" class="form-label">Game</label>
+        <label for="game_id" class="form-label">Product</label>
         <select name="game_id" id="game_id" class="form-select" required>
           <option value="" selected disabled>Select Game</option>
           @foreach ($games as $game)
@@ -51,7 +51,7 @@
         <textarea name="instructions" id="instructions" class="form-control" rows="3" required></textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary">Add Product</button>
+      <button type="submit" class="btn btn-primary">Published</button>
     </form>
   </div>
 </div>

@@ -5,7 +5,7 @@
 
 <head>
     <title>KalaChan Store</title>
-    <link rel="icon" href="images/icon.png" type="image/gif" sizes="16x16">
+    <link rel="icon" href="/kalachan.png" type="image/png" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" >
     <meta content="This is kalachan gaming website" name="description" >

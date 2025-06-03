@@ -5,7 +5,7 @@
 @section('content')
 <div class="card">
   <div class="card-header">
-    <h5>Edit Top-Up Product</h5>
+    <h5>Edit Payment</h5>
   </div>
   <div class="card-body">
     <form action="{{ route('admin.topups.update', $topUpProduct->id) }}" method="POST">
@@ -13,7 +13,7 @@
       @method('PUT')
 
       <div class="mb-3">
-        <label for="game_id" class="form-label">Game</label>
+        <label for="game_id" class="form-label">Product</label>
         <select name="game_id" class="form-control" required>
           @foreach ($games as $game)
             <option value="{{ $game->id }}" {{ $topUpProduct->game_id == $game->id ? 'selected' : '' }}>
@@ -53,7 +53,7 @@
         <textarea name="instructions" id="instructions" class="form-control" rows="3" required>{{ old('instructions', $topUpProduct->instructions) }}</textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary">Update Product</button>
+      <button type="submit" class="btn btn-primary">Update Published</button>
       <a href="{{ route('admin.topups.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>

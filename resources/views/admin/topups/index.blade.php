@@ -4,8 +4,8 @@
 
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Top-Up Products</h5>
-    <a href="{{ route('admin.topups.create') }}" class="btn btn-sm btn-primary">Add New Product</a>
+    <h5 class="mb-0">Add Payment</h5>
+    <a href="{{ route('admin.topups.create') }}" class="btn btn-sm btn-primary">Add Payment</a>
   </div>
 
   <div class="card-body">
