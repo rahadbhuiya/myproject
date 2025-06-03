@@ -38,39 +38,37 @@
   <link href="{{ asset('backend/assets/css/app-style.css') }}" rel="stylesheet"/>
 
   <style>
-    /* Make html and body take full height */
     html, body {
       height: 100%;
       margin: 0;
-      padding: ;
-      background: #f8f9fa;
-      overflow-x: auto; /* allow horizontal scroll */
+      overflow-x: hidden; /* avoid horizontal scroll */
       overflow-y: auto;
       display: flex;
       flex-direction: column;
     }
 
     #wrapper {
-      flex: 1 0 auto;
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      padding-bottom: 60px; /* footer height approx */
+      padding-bottom: 60px; /* footer height */
+      overflow: hidden; /* prevent double scroll */
     }
 
     .content-wrapper {
-      flex: 1 0 auto;
-      padding: 70px;
+      flex: 1 1 auto;
+      padding: 70px 20px 20px 20px;
+      overflow-y: auto; /* scroll only content */
     }
 
     footer.footer {
       position: fixed;
       bottom: 0;
       width: 100%;
-      height: 50px;
-      background-color: #343a40;
+      height: 60px;
       color: white;
-      padding: 15px 0;
+      line-height: 60px;
       text-align: center;
       z-index: 1000;
       box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
@@ -80,27 +78,19 @@
 
 <body class="bg-theme bg-theme1">
 
-  <!-- Start wrapper -->
   <div id="wrapper">
 
     @include('admin.partials.topbar')
     @include('admin.partials.sidebar')
 
-    <!-- Start content-wrapper -->
     <div class="content-wrapper">
       <div class="container-fluid">
-        <!-- Start Dashboard Content -->
         @yield('content')
-        <!-- End Dashboard Content -->
       </div>
     </div>
-    <!-- End content-wrapper -->
 
-    <!-- Start Back To Top Button -->
     <a href="javascript:void(0);" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
-    <!-- End Back To Top Button -->
 
-    <!-- Start footer -->
     <footer class="footer">
       <div class="container">
         <div class="text-center">
@@ -108,10 +98,8 @@
         </div>
       </div>
     </footer>
-    <!-- End footer -->
 
   </div>
-  <!-- End wrapper -->
 
   <!-- Bootstrap core JavaScript -->
   <script src="{{ asset('backend/assets/js/jquery.min.js') }}"></script>

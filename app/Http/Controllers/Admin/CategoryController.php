@@ -90,4 +90,19 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
+
+    // Delete category
+    public function destroy($id)
+    {
+        $category = Category::findOrFail($id);
+
+        // Delete image from Cloudinary if exists
+        if (!empty($category->image_public_id)) {
+            Cloudinary::uploadApi()->destroy($category->image_public_id);
+        }
+
+        $category->delete();
+
+        return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully.');
+    }
 }

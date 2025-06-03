@@ -413,3 +413,4 @@ Route::get('/send-test-mail', function () {
 // Route::middleware(['web', 'auth', 'admin'])->group(function () {
 //     Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
 // });
+

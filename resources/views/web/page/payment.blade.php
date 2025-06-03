@@ -76,12 +76,13 @@
             <div class="col-12 col-lg-4">
                 <div class="glass-card">
                     <h2 class="mb-4 border-bottom pb-2">{{ $product->product_name }}</h2>
-                    <p><strong class="text-info">🎮 TopUp:</strong> {{ $product->game->name }}</p>
-                    <p><strong class="text-warning">💵 Price:</strong> {{ $product->price }} BDT</p>
-                    <p><strong class="text-danger">🎯 Discount:</strong> {{ $product->discount ?? 0 }}%</p>
-                    <p><strong class="text-warning">💵 Final Price:</strong>
+                    <p><strong class="text-info">TopUp:</strong> {{ $product->game->name }}</p>
+                    <p><strong class="text-warning">Price:</strong> {{ $product->price }} BDT</p>
+                    <p><strong class="text-danger">Discount:</strong> {{ $product->discount ?? 0 }}%</p>
+                    <p><strong class="text-warning">Final Price:</strong>
                         {{ $product->price - ($product->price * ($product->discount ?? 0) / 100) }} BDT</p>
-                    <p><strong class="text-danger">📋 Instructions:</strong><br>
+                    <p><strong class="text-info">Delivery Time:</strong> {{ $product->delivery_time }}</p>
+                    <p><strong class="text-danger">How to Top UP:</strong><br>
                         <span class="whitespace-pre-line">{{ $product->instructions }}</span></p>
                 </div>
             </div>
