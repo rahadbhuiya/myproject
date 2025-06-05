@@ -18,6 +18,7 @@
     <link href="{{asset('fontend/css/swiper.css')}}" rel="stylesheet" type="text/css" >
     <link href="{{asset('fontend/css/style.css')}}" rel="stylesheet" type="text/css" >
     <link href="{{asset('fontend/css/coloring.css')}}" rel="stylesheet" type="text/css" >
+    <link rel="stylesheet" href="{{ asset('fontend/css/style.css') }}?v={{ time() }}">
     <!-- color scheme -->
     <link id="colors" href="{{asset('fontend/css/colors/scheme-01.css')}}" rel="stylesheet" type="text/css" >
     @stack('styles')

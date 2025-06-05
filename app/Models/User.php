@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail; //  Add this
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail //  Implement this interface
 {
     use Notifiable;
 
@@ -14,7 +15,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'role', // this is key
+        'role',
     ];
 
     protected $casts = [
@@ -27,9 +28,6 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    /**
-     * Determine if the user is an admin.
-     */
     public function getIsAdminAttribute(): bool
     {
         return $this->role === 'admin';

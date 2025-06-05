@@ -1,9 +1,9 @@
 <x-guest-layout>
     <x-authentication-card>
         <x-slot name="logo">
-            <h1 class="text-4xl font-extrabold text-white drop-shadow-lg tracking-wide select-none" style="font-family: 'Orbitron', sans-serif;">
+            <!-- <h1 class="text-4xl font-extrabold text-white drop-shadow-lg tracking-wide select-none" style="font-family: 'Orbitron', sans-serif;">
                 KalaChan Login
-            </h1>
+            </h1> -->
         </x-slot>
 
         <x-validation-errors class="mb-6" />

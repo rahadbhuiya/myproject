@@ -1120,7 +1120,7 @@ header:not(.header-mobile) #mainmenu>li:hover ul.mega {
   text-align: center;
   cursor: poInter;
   color: #fff;
-  margin-top: 0px;
+  margin-top: -18px;
   margin-left: 20px;
 }
 
@@ -9406,6 +9406,7 @@ a.btn-right {
 
 .mb-100 {
   margin-bottom: -100px;
+
 }
 
 
@@ -13711,6 +13712,7 @@ i.bg-color-secondary {
 
 .subtitle.blink{
   padding-left: 35px;
+  margin-top: 20px;
 }
 
 .subtitle.blink:before{
